@@ -21,8 +21,16 @@ public class ColorImageDCTCoder {
 	
 	// TOFIX - add RGB/YCbCr conversion matrix
 	// TODO: change both conversion methods to use this
-	private double[][] fwdColorConvMatrix;
-	private double[][] invColorConvMatrix;
+	private double[][] fwdColorConvMatrix = {
+			{0.2990, 0.5870, 0.1140},
+			{-0.1687, -0.3313, 0.5000},
+			{0.5000, -0.4187, -0.0813}
+	};
+	private double[][] invColorConvMatrix = {
+			{1.0000, 0.0, 1.4020},
+			{1.0000, -0.3441, -0.7141},
+			{1.0000, 1.7720, 0.0}
+	};
 	
 	// TOFIX - add minimum/maximum DCT coefficient range
 	private double dctCoefMaxValue = Math.pow(2, 10);
@@ -190,13 +198,19 @@ public class ColorImageDCTCoder {
 	protected void convertRGB2YCbCr(int R[][], int G[][], int B[][], double Y[][], double Cb[][], double Cr[][],
 			int width, int height) {
 		
-		//boolean inRange = true; // REMOVETHIS
+		boolean inRange = true; // REMOVETHIS
 		
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				Y[y][x] = (0.2990 * R[y][x]) + (0.5870 * G[y][x]) + (0.1140 * B[y][x]);
-				Cb[y][x] = (-0.1687 * R[y][x]) + (-0.3313 * G[y][x]) + (0.5000 * B[y][x]);
-				Cr[y][x] = (0.5000 * R[y][x]) + (-0.4187 * G[y][x]) + (-0.0813 * B[y][x]);
+				Y[y][x] = (fwdColorConvMatrix[0][0] * R[y][x]) 
+						+ (fwdColorConvMatrix[0][1] * G[y][x]) 
+						+ (fwdColorConvMatrix[0][2] * B[y][x]);
+				Cb[y][x] = (fwdColorConvMatrix[1][0] * R[y][x]) 
+						+ (fwdColorConvMatrix[1][1] * G[y][x]) 
+						+ (fwdColorConvMatrix[1][2] * B[y][x]);
+				Cr[y][x] = (fwdColorConvMatrix[2][0] * R[y][x]) 
+						+ (fwdColorConvMatrix[2][1] * G[y][x]) 
+						+ (fwdColorConvMatrix[2][2] * B[y][x]);
 			
 				Y[y][x] = clip(Y[y][x], 0.0, 255.0);
 				Cb[y][x] = clip(Cb[y][x], -127.5, 127.5);
@@ -207,7 +221,6 @@ public class ColorImageDCTCoder {
 				Cb[y][x] -= 0.5;
 				Cr[y][x] -= 0.5;
 				
-				/*
 				// REMOVETHIS
 				for (int i = 0; i < 3; i++) {
 					double val = 0;
@@ -233,22 +246,19 @@ public class ColorImageDCTCoder {
 						inRange = false;
 					}
 				}
-				*/
 			}
 		}
 		
-		/*
 		// REMOVETHIS
 		if (inRange) {
 			System.out.println("YCC is in range! Woohoo!!\n");
 		}
-		*/
 	}
 
 	// TOFIX - add code to convert YCbCr to RGB
 	protected void convertYCbCr2RGB(double Y[][], double Cb[][], double Cr[][], int R[][], int G[][], int B[][],
 			int width, int height) {
-		//boolean inRange = true; // REMOVETHIS
+		boolean inRange = true; // REMOVETHIS
 		
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
@@ -256,15 +266,20 @@ public class ColorImageDCTCoder {
 				Cb[y][x] += 0.5;
 				Cr[y][x] += 0.5;
 				
-				R[y][x] = (int)((1.0000 * Y[y][x]) + (0.0 * Cb[y][x]) + (1.4020 * Cr[y][x]));
-				G[y][x] = (int)((1.0000 * Y[y][x]) + (-0.3441 * Cb[y][x]) + (-0.7141 * Cr[y][x]));
-				B[y][x] = (int)((1.0000 * Y[y][x]) + (1.7720 * Cb[y][x]) + (0.0 * Cr[y][x]));
+				R[y][x] = (int)((invColorConvMatrix[0][0] * Y[y][x]) 
+						+ (invColorConvMatrix[0][1] * Cb[y][x]) 
+						+ (invColorConvMatrix[0][2] * Cr[y][x]));
+				G[y][x] = (int)((invColorConvMatrix[1][0] * Y[y][x]) 
+						+ (invColorConvMatrix[1][1] * Cb[y][x]) 
+						+ (invColorConvMatrix[1][2] * Cr[y][x]));
+				B[y][x] = (int)((invColorConvMatrix[2][0] * Y[y][x]) 
+						+ (invColorConvMatrix[2][1] * Cb[y][x]) 
+						+ (invColorConvMatrix[2][2] * Cr[y][x]));
 			
 				R[y][x] = clip(R[y][x], 0, 255);
 				G[y][x] = clip(G[y][x], 0, 255);
 				B[y][x] = clip(B[y][x], 0, 255);
 				
-				/*
 				// REMOVETHIS
 				for (int i = 0; i < 3; i++) {
 					double val = 0;
@@ -290,17 +305,14 @@ public class ColorImageDCTCoder {
 						inRange = false;
 					}
 				}
-				*/
 				
 			}
 		}
 		
-		/*
 		// REMOVETHIS
 		if (inRange) {
 			System.out.println("RGB is in range! Woohoo!!\n");
 		}
-		*/
 		
 	}
 
