@@ -21,9 +21,16 @@ public class CS4551_George {
 		boolean done = false;
 		String imgName = args[0];
 		Scanner in = new Scanner(System.in);
-
+		
+		String menuMessage = "\nMain Menu-----------------------------------\r\n"
+				+ "1. Vector Quantization\r\n"
+				+ "2. DCT-based Coding\r\n"
+				+ "3. Quit\r\n"
+				+ "Please enter the task number [1-3]:";
+		
 		// main menu
 		while (!done) {
+			System.out.println(menuMessage);
 			int choice = menu(in);
 			switch (choice) {
 			case 1:
