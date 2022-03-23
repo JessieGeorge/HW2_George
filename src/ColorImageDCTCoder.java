@@ -20,6 +20,7 @@ public class ColorImageDCTCoder {
 	private int[][] quantY, quantCb, quantCr; // quantized DCT coefficients for Y/Cb/Cr planes
 	
 	// TOFIX - add RGB/YCbCr conversion matrix
+	// TODO: change both conversion methods to use this
 	private double[][] fwdColorConvMatrix;
 	private double[][] invColorConvMatrix;
 	
@@ -365,6 +366,8 @@ public class ColorImageDCTCoder {
 						
 						dctCoef[v][u] = clip(dctCoef[v][u], 
 								dctCoefMinValue, dctCoefMaxValue);
+						
+						// TODO: quantization
 					}
 				}
 				
