@@ -18,11 +18,14 @@ public class ColorImageDCTCoder {
 	private double[][] inpY444, inpCb444, inpCr444, inpCb420, inpCr420; // input Y/Cb/Cr planes
 	private double[][] outY444, outCb444, outCr444, outCb420, outCr420; // coded Y/Cb/Cr planes
 	private int[][] quantY, quantCb, quantCr; // quantized DCT coefficients for Y/Cb/Cr planes
+	
 	// TOFIX - add RGB/YCbCr conversion matrix
 	private double[][] fwdColorConvMatrix;
 	private double[][] invColorConvMatrix;
+	
 	// TOFIX - add minimum/maximum DCT coefficient range
-	private double dctCoefMinValue, dctCoefMaxValue;
+	private double dctCoefMaxValue = Math.pow(2, 10);
+	private double dctCoefMinValue = -1 * dctCoefMaxValue;
 	
 	private int blockSize = 8;
 
@@ -360,6 +363,8 @@ public class ColorImageDCTCoder {
 						
 						dctCoef[v][u] = ((Cu * Cv) / 4.0) + sum;
 						
+						dctCoef[v][u] = clip(dctCoef[v][u], 
+								dctCoefMinValue, dctCoefMaxValue);
 					}
 				}
 				
