@@ -73,6 +73,15 @@ public class ColorImageDCTCoder {
 
 	// decode one image
 	protected int decode(MImage outImg, double n) {
+		
+		// REMOVETHIS
+		outY444 = inpY444;
+		outCb444 = inpCb444;
+		outCr444 = inpCr444;
+		outR444 = inpR444;
+		outG444 = inpG444;
+		outB444 = inpB444;
+				
 		// set work quantization table
 		setWorkQuantTable(n);
 		// D1/2. 8x8-based dequantization, inverse DCT
@@ -82,13 +91,7 @@ public class ColorImageDCTCoder {
 		// D3. Cb/Cr 420 -> 444, YCbCr -> RGB
 		convert420To444(outCb420, outCb444, fullWidth, fullHeight);
 		convert420To444(outCr420, outCr444, fullWidth, fullHeight);
-		convertYCbCr2RGB(outY444, outCb444, outCr444, outR444, outG444, outB444, fullWidth, fullHeight);
-		
-		// REMOVETHIS
-		outR444 = inpR444;
-		outG444 = inpG444;
-		outB444 = inpB444;
-		
+		convertYCbCr2RGB(outY444, outCb444, outCr444, outR444, outG444, outB444, fullWidth, fullHeight);	
 		// D4. combine R/G/B planes into output image
 		combinePlanes(outImg, outR444, outG444, outB444, imgWidth, imgHeight);
 		return 0;
@@ -114,6 +117,10 @@ public class ColorImageDCTCoder {
 		inpR444 = new int[fullHeight][fullWidth];
 		inpG444 = new int[fullHeight][fullWidth];
 		inpB444 = new int[fullHeight][fullWidth];
+		
+		inpY444 = new double[fullHeight][fullWidth];
+		inpCb444 = new double[fullHeight][fullWidth];
+		inpCr444 = new double[fullHeight][fullWidth];
 		
 		return 0;
 	}
@@ -176,11 +183,119 @@ public class ColorImageDCTCoder {
 	// TOFIX - add code to convert RGB to YCbCr
 	protected void convertRGB2YCbCr(int R[][], int G[][], int B[][], double Y[][], double Cb[][], double Cr[][],
 			int width, int height) {
+		
+		//boolean inRange = true; // REMOVETHIS
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				Y[y][x] = (0.2990 * R[y][x]) + (0.5870 * G[y][x]) + (0.1140 * B[y][x]);
+				Cb[y][x] = (-0.1687 * R[y][x]) + (-0.3313 * G[y][x]) + (0.5000 * B[y][x]);
+				Cr[y][x] = (0.5000 * R[y][x]) + (-0.4187 * G[y][x]) + (-0.0813 * B[y][x]);
+			
+				Y[y][x] = clip(Y[y][x], 0.0, 255.0);
+				Cb[y][x] = clip(Cb[y][x], -127.5, 127.5);
+				Cr[y][x] = clip(Cr[y][x], -127.5, 127.5);
+				
+				// subtract so that all span range [-128, 127]
+				Y[y][x] -= 128;
+				Cb[y][x] -= 0.5;
+				Cr[y][x] -= 0.5;
+				
+				/*
+				// REMOVETHIS
+				for (int i = 0; i < 3; i++) {
+					double val = 0;
+					String arr = "";
+					
+					switch (i) {
+						case 0:
+							val = Y[y][x];
+							arr = "Y";
+							break;
+						case 1:
+							val = Cb[y][x];
+							arr = "Cb";
+							break;
+						case 2:
+							val = Cr[y][x];
+							arr = "Cr";
+							break;
+					}
+					
+					if (val < -128 || val > 127) {
+						System.out.println("ERROR Outside Range: " + arr + "[" + y + "][" + x + "] = " + val);
+						inRange = false;
+					}
+				}
+				*/
+			}
+		}
+		
+		/*
+		// REMOVETHIS
+		if (inRange) {
+			System.out.println("YCC is in range! Woohoo!!\n");
+		}
+		*/
 	}
 
 	// TOFIX - add code to convert YCbCr to RGB
 	protected void convertYCbCr2RGB(double Y[][], double Cb[][], double Cr[][], int R[][], int G[][], int B[][],
 			int width, int height) {
+		//boolean inRange = true; // REMOVETHIS
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				Y[y][x] += 128;
+				Cb[y][x] += 0.5;
+				Cr[y][x] += 0.5;
+				
+				R[y][x] = (int)((1.0000 * Y[y][x]) + (0.0 * Cb[y][x]) + (1.4020 * Cr[y][x]));
+				G[y][x] = (int)((1.0000 * Y[y][x]) + (-0.3441 * Cb[y][x]) + (-0.7141 * Cr[y][x]));
+				B[y][x] = (int)((1.0000 * Y[y][x]) + (1.7720 * Cb[y][x]) + (0.0 * Cr[y][x]));
+			
+				R[y][x] = clip(R[y][x], 0, 255);
+				G[y][x] = clip(G[y][x], 0, 255);
+				B[y][x] = clip(B[y][x], 0, 255);
+				
+				/*
+				// REMOVETHIS
+				for (int i = 0; i < 3; i++) {
+					double val = 0;
+					String arr = "";
+					
+					switch (i) {
+						case 0:
+							val = R[y][x];
+							arr = "R";
+							break;
+						case 1:
+							val = G[y][x];
+							arr = "G";
+							break;
+						case 2:
+							val = B[y][x];
+							arr = "B";
+							break;
+					}
+					
+					if (val < 0 || val > 255) {
+						System.out.println("ERROR Outside Range: " + arr + "[" + y + "][" + x + "] = " + val);
+						inRange = false;
+					}
+				}
+				*/
+				
+			}
+		}
+		
+		/*
+		// REMOVETHIS
+		if (inRange) {
+			System.out.println("RGB is in range! Woohoo!!\n");
+		}
+		*/
+		
 	}
 
 	// TOFIX - add code to convert chrominance from 444 to 420
