@@ -34,9 +34,15 @@ public class ColorImageDCTCoder {
 		// allocate work memory space
 		int width = inpImg.getW();
 		int height = inpImg.getH();
+		imgWidth = width;
+		imgHeight = height;
 		allocate(width, height);
+		
 		// create output image
-		MImage outImg = new MImage(width, height);
+		//MImage outImg = new MImage(width, height); // TODO: uncomment
+		
+		MImage outImg = new MImage(fullWidth, fullHeight); // REMOVETHIS
+		
 		// encode image
 		encode(inpImg, n);
 		// decode image
@@ -77,6 +83,12 @@ public class ColorImageDCTCoder {
 		convert420To444(outCb420, outCb444, fullWidth, fullHeight);
 		convert420To444(outCr420, outCr444, fullWidth, fullHeight);
 		convertYCbCr2RGB(outY444, outCb444, outCr444, outR444, outG444, outB444, fullWidth, fullHeight);
+		
+		// REMOVETHIS
+		outR444 = inpR444;
+		outG444 = inpG444;
+		outB444 = inpB444;
+		
 		// D4. combine R/G/B planes into output image
 		combinePlanes(outImg, outR444, outG444, outB444, imgWidth, imgHeight);
 		return 0;
@@ -85,6 +97,24 @@ public class ColorImageDCTCoder {
 	// TOFIX - add code to set up full/half resolutions and allocate memory space
 	// used in DCT-based coding
 	protected int allocate(int width, int height) {
+		fullWidth = width + (8 - (width % 8));
+		fullHeight = height + (8 - (height % 8));
+		halfWidth = fullWidth / 2;
+		halfHeight = fullHeight / 2;
+		
+		//REMOVETHIS
+		System.out.println("width = " + width);
+		System.out.println("fullWidth = " + fullWidth);
+		System.out.println("halfWidth = " + halfWidth);
+		
+		System.out.println("\nheight = " + height);
+		System.out.println("fullHeight = " + fullHeight);
+		System.out.println("halfHeight = " + halfHeight);
+		
+		inpR444 = new int[fullHeight][fullWidth];
+		inpG444 = new int[fullHeight][fullWidth];
+		inpB444 = new int[fullHeight][fullWidth];
+		
 		return 0;
 	}
 
@@ -94,10 +124,53 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to extract R/G/B planes from MImage
 	protected void extractPlanes(MImage inpImg, int R444[][], int G444[][], int B444[][], int width, int height) {
+		int x,y;
+		x = 0;
+		y = 0;
+		int[] rgb = new int[3];
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				inpImg.getPixel(x, y, rgb);
+				R444[y][x] =  rgb[0];
+				G444[y][x] =  rgb[1];
+				B444[y][x] =  rgb[2];
+			}
+		}
+		
+		for (y = y; y < fullHeight; y++) {
+			for (x = x; x < fullWidth; x++) {
+				R444[y][x] =  0;
+				G444[y][x] =  0;
+				B444[y][x] =  0;
+			}
+		}
 	}
 
 	// TOFIX - add code to combine R/G/B planes to MImage
 	protected void combinePlanes(MImage outImg, int R444[][], int G444[][], int B444[][], int width, int height) {
+		int x,y;
+		x = 0;
+		y = 0;
+		
+		int[] rgb = new int[3];
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				rgb[0] = R444[y][x];
+				rgb[1] = G444[y][x];
+				rgb[2] = B444[y][x];
+				outImg.setPixel(x, y, rgb);
+			}
+		}
+		
+		// REMOVETHIS ... the padding should be gone, i'm just testing it out for now
+		for (y = y; y < fullHeight; y++) {
+			for (x = x; x < fullWidth; x++) {
+				rgb[0] = R444[y][x];
+				rgb[1] = G444[y][x];
+				rgb[2] = B444[y][x];
+				outImg.setPixel(x, y, rgb);
+			}
+		}
 	}
 
 	// TOFIX - add code to convert RGB to YCbCr
