@@ -9,6 +9,8 @@
  * By Yi Zhao 03/14/2022
  *******************************************************/
 
+import java.util.Arrays; // REMOVETHIS
+
 public class ColorImageDCTCoder {
 	private int imgWidth, imgHeight; // input image resolution
 	private int fullWidth, fullHeight; // full image resolution (multiple of 8)
@@ -112,18 +114,8 @@ public class ColorImageDCTCoder {
 	// decode one image
 	protected int decode(MImage outImg, double n) {
 		
-		/*
-		// REMOVETHIS
-		outY444 = inpY444;
-		outCb444 = inpCb444;
-		outCr444 = inpCr444;
-		outR444 = inpR444;
-		outG444 = inpG444;
-		outB444 = inpB444;
-		*/
-		
 		// set work quantization table
-		setWorkQuantTable(n);
+		//setWorkQuantTable(n); // TODO: Comment this out or not?
 		// D1/2. 8x8-based dequantization, inverse DCT
 		System.out.println("\nSending Y to decodePlane ... "); // REMOVETHIS
 		decodePlane(quantY, outY444, fullWidth, fullHeight, false);
@@ -135,6 +127,17 @@ public class ColorImageDCTCoder {
 		convert420To444(outCb420, outCb444, fullWidth, fullHeight);
 		convert420To444(outCr420, outCr444, fullWidth, fullHeight);
 		convertYCbCr2RGB(outY444, outCb444, outCr444, outR444, outG444, outB444, fullWidth, fullHeight);	
+		
+		/*
+		// REMOVETHIS
+		outY444 = inpY444;
+		outCb444 = inpCb444;
+		outCr444 = inpCr444;
+		outR444 = inpR444;
+		outG444 = inpG444;
+		outB444 = inpB444;
+		*/
+		
 		// D4. combine R/G/B planes into output image
 		combinePlanes(outImg, outR444, outG444, outB444, imgWidth, imgHeight);
 		return 0;
@@ -226,6 +229,12 @@ public class ColorImageDCTCoder {
 				quantTableC[i][j] *= compressionQuality;
 			}
 		}
+		
+		/*
+		//REMOVETHIS
+		System.out.println("\nquantTableY:\n" + Arrays.deepToString(quantTableY));
+		System.out.println("\nquantTableC:\n" + Arrays.deepToString(quantTableC));
+		*/
 	}
 
 	// TOFIX - add code to extract R/G/B planes from MImage
