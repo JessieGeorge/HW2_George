@@ -79,8 +79,12 @@ public class ColorImageDCTCoder {
 		convert444To420(inpCb444, inpCb420, fullWidth, fullHeight);
 		convert444To420(inpCr444, inpCr420, fullWidth, fullHeight);
 		// E3/4. 8x8-based forward DCT, quantization
+		
+		System.out.println("Sending Y to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpY444, quantY, fullWidth, fullHeight, false);
+		System.out.println("Done with Y. Sending Cb to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpCb420, quantCb, halfWidth, halfHeight, true);
+		System.out.println("Done with Y. Sending Cr to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpCr420, quantCr, halfWidth, halfHeight, true);
 		return 0;
 	}
@@ -135,6 +139,10 @@ public class ColorImageDCTCoder {
 		inpY444 = new double[fullHeight][fullWidth];
 		inpCb444 = new double[fullHeight][fullWidth];
 		inpCr444 = new double[fullHeight][fullWidth];
+		
+		// TODO: change dimensions?
+		inpCb420 = new double[fullHeight][fullWidth];
+		inpCr420 = new double[fullHeight][fullWidth];
 		
 		return 0;
 	}
@@ -318,6 +326,8 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to convert chrominance from 444 to 420
 	protected void convert444To420(double CbCr444[][], double CbCr420[][], int width, int height) {
+		// TODO: figure this out
+		CbCr420 = CbCr444; // REMOVETHIS;
 	}
 
 	// TOFIX - add code to convert chrominance from 420 to 444
@@ -349,6 +359,7 @@ public class ColorImageDCTCoder {
 					for (int x = 0; x < blockSize; x++) {
 						u = x;
 						
+						//System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
 						// one pixel in the block
 						blockPixel = plane[b + y][a + x];
 						
