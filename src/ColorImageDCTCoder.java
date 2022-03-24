@@ -114,6 +114,7 @@ public class ColorImageDCTCoder {
 	// decode one image
 	protected int decode(MImage outImg, double n) {
 		
+		/*
 		// REMOVETHIS
 		outY444 = inpY444;
 		outCb444 = inpCb444;
@@ -121,12 +122,16 @@ public class ColorImageDCTCoder {
 		outR444 = inpR444;
 		outG444 = inpG444;
 		outB444 = inpB444;
-				
+		*/
+		
 		// set work quantization table
 		setWorkQuantTable(n);
 		// D1/2. 8x8-based dequantization, inverse DCT
+		System.out.println("\nSending Y to decodePlane ... "); // REMOVETHIS
 		decodePlane(quantY, outY444, fullWidth, fullHeight, false);
+		System.out.println("Done with Y. Sending Cb to decodePlane ... "); // REMOVETHIS
 		decodePlane(quantCb, outCb420, halfWidth, halfHeight, true);
+		System.out.println("Done with Y. Sending Cr to decodePlane ... "); // REMOVETHIS
 		decodePlane(quantCr, outCr420, halfWidth, halfHeight, true);
 		// D3. Cb/Cr 420 -> 444, YCbCr -> RGB
 		convert420To444(outCb420, outCb444, fullWidth, fullHeight);
@@ -171,6 +176,19 @@ public class ColorImageDCTCoder {
 		// TODO: change dimensions?
 		quantCb = new int[fullHeight][fullWidth];
 		quantCr = new int[fullHeight][fullWidth];
+		
+		// ------ OUTPUT ------
+		outR444 = new int[fullHeight][fullWidth];
+		outG444 = new int[fullHeight][fullWidth];
+		outB444 = new int[fullHeight][fullWidth];
+		
+		outY444 = new double[fullHeight][fullWidth];
+		outCb444 = new double[fullHeight][fullWidth];
+		outCr444 = new double[fullHeight][fullWidth];
+		
+		// TODO: change dimensions?
+		outCb420 = new double[fullHeight][fullWidth];
+		outCr420 = new double[fullHeight][fullWidth];
 		
 		return 0;
 	}
@@ -369,6 +387,8 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to convert chrominance from 420 to 444
 	protected void convert420To444(double CbCr420[][], double CbCr444[][], int width, int height) {
+		// TODO: figure this out
+		CbCr444 = CbCr420; // REMOVETHIS;
 	}
 
 	// TOFIX - add code to encode one plane with 8x8 FDCT and quantization
@@ -443,6 +463,71 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to decode one plane with 8x8 dequantization and IDCT
 	protected void decodePlane(int quant[][], double plane[][], int width, int height, boolean chroma) {
+
+		// Referring to IDCT formula in canvas question:
+		double Cu;
+		double Cv;
+		double dctCoef; // Fuv
+		double idctCoef; // F'uv
+		int x, y;
+		double firstCos; // the cosine relating to x and u.
+		double secondCos; // the cosine relating to y and v.	
+		double sum; // the result after the two sigmas.
+		double blockPixel; // this is f'xy.
+		
+		// the whole image
+		for (int b = 0; b < height; b = b + blockSize) {
+			for (int a = 0; a < width; a = a + blockSize) {
+				
+				sum = 0;
+				// one block in the image
+				for (int v = 0; v < blockSize; v++) {
+					y = v;
+					
+					if (v == 0) {
+						Cv = 1.0 / Math.sqrt(2);
+					} else {
+						Cv = 1.0;
+					}
+					
+					for (int u = 0; u < blockSize; u++) {
+						x = u;
+						
+						if (u == 0) {
+							Cu = 1.0 / Math.sqrt(2);
+						} else {
+							Cu = 1.0;
+						}
+						
+						//System.out.println("TEST: b = " + b + " v = " + v + " a = " + a + " u = " + u); //REMOVETHIS
+						// the quantized Forward DCT coeffient for one pixel in the block
+						dctCoef = quant[b + v][a + u];
+						// convert to dequantized Inverse DCT coeffient for one pixel in the block
+						if (chroma) {
+							idctCoef = dctCoef * quantTableC[v][u]; 
+						} else {
+							idctCoef = dctCoef * quantTableY[v][u];  
+						}
+						
+						firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
+						secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
+						
+						// TODO: Change this
+						sum += Cu * Cv * idctCoef * firstCos * secondCos;
+					}
+				}
+				
+				blockPixel = sum / 4.0;
+				
+				// one block in the image
+				for (y = 0; y < blockSize; y++) {
+					for (x = 0; x < blockSize; x++) {
+						System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
+						plane[b + y][a + x] = blockPixel;
+					}
+				}
+			}
+		}
 	}
 
 	// clip one integer
