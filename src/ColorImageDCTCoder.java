@@ -20,7 +20,6 @@ public class ColorImageDCTCoder {
 	private int[][] quantY, quantCb, quantCr; // quantized DCT coefficients for Y/Cb/Cr planes
 	
 	// TOFIX - add RGB/YCbCr conversion matrix
-	// TODO: change both conversion methods to use this
 	private double[][] fwdColorConvMatrix = {
 			{0.2990, 0.5870, 0.1140},
 			{-0.1687, -0.3313, 0.5000},
@@ -37,7 +36,30 @@ public class ColorImageDCTCoder {
 	private double dctCoefMinValue = -1 * dctCoefMaxValue;
 	
 	private int blockSize = 8;
-
+	
+	private double[][] quantTableY = {
+			{04.0, 04.0, 04.0, 08.0, 08.0, 16.0, 16.0, 32.0},
+			{04.0, 04.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0},
+			{04.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 32.0},
+			{08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 32.0, 32.0},
+			{08.0, 16.0, 16.0, 32.0, 32.0, 32.0, 32.0, 48.0},
+			{16.0, 16.0, 32.0, 32.0, 32.0, 32.0, 48.0, 48.0},
+			{16.0, 32.0, 32.0, 32.0, 32.0, 48.0, 48.0, 48.0},
+			{32.0, 32.0, 32.0, 32.0, 48.0, 48.0, 48.0, 48.0}
+	};
+	
+	// Cb and Cr have the same quant table
+	private double[][] quantTableC = {
+			{04.0, 04.0, 04.0, 08.0, 08.0, 16.0, 16.0, 32.0},
+			{04.0, 04.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0},
+			{04.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 32.0},
+			{08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 32.0, 32.0},
+			{08.0, 16.0, 16.0, 32.0, 32.0, 32.0, 32.0, 48.0},
+			{16.0, 16.0, 32.0, 32.0, 32.0, 32.0, 48.0, 48.0},
+			{16.0, 32.0, 32.0, 32.0, 32.0, 48.0, 48.0, 48.0},
+			{32.0, 32.0, 32.0, 32.0, 48.0, 48.0, 48.0, 48.0}
+	};
+	
 	public ColorImageDCTCoder() {
 	}
 
@@ -149,6 +171,8 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to set up work quantization table
 	protected void setWorkQuantTable(double n) {
+		
+		quantTableY 
 	}
 
 	// TOFIX - add code to extract R/G/B planes from MImage
