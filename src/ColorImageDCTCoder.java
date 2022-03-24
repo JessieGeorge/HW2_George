@@ -427,8 +427,15 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to convert chrominance from 420 to 444
 	protected void convert420To444(double CbCr420[][], double CbCr444[][], int width, int height) {
-		// TODO: figure this out
-		CbCr444 = CbCr420; // REMOVETHIS;
+		
+		for (int y = 0; y < fullHeight / 2; y++) {
+			for (int x = 0; x < fullWidth / 2; x++) {
+				CbCr444[y][x] = CbCr420[y][x];
+				CbCr444[y][x + 1] = CbCr420[y][x];
+				CbCr444[y + 1][x] = CbCr420[y][x];
+				CbCr444[y + 1][x + 1] = CbCr420[y][x];
+			}
+		}
 	}
 
 	// TOFIX - add code to encode one plane with 8x8 FDCT and quantization
