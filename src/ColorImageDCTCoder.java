@@ -104,7 +104,7 @@ public class ColorImageDCTCoder {
 		encodePlane(inpY444, quantY, fullWidth, fullHeight, false);
 		System.out.println("Done with Y. Sending Cb to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpCb420, quantCb, halfWidth, halfHeight, true);
-		System.out.println("Done with Y. Sending Cr to encodePlane ... "); // REMOVETHIS
+		System.out.println("Done with Cb. Sending Cr to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpCr420, quantCr, halfWidth, halfHeight, true);
 		return 0;
 	}
@@ -129,7 +129,7 @@ public class ColorImageDCTCoder {
 		decodePlane(quantY, outY444, fullWidth, fullHeight, false);
 		System.out.println("Done with Y. Sending Cb to decodePlane ... "); // REMOVETHIS
 		decodePlane(quantCb, outCb420, halfWidth, halfHeight, true);
-		System.out.println("Done with Y. Sending Cr to decodePlane ... "); // REMOVETHIS
+		System.out.println("Done with Cb. Sending Cr to decodePlane ... "); // REMOVETHIS
 		decodePlane(quantCr, outCr420, halfWidth, halfHeight, true);
 		// D3. Cb/Cr 420 -> 444, YCbCr -> RGB
 		convert420To444(outCb420, outCb444, fullWidth, fullHeight);
@@ -147,21 +147,41 @@ public class ColorImageDCTCoder {
 		imgHeight = height;
 		
 		// padded to be divisible by 8
-		fullWidth = width + (8 - (width % 8));
-		fullHeight = height + (8 - (height % 8));
-		
-		halfWidth = fullWidth / 2;
-		halfHeight = fullHeight / 2; // TODO: Do we ever use this?
-		// TODO: pad halfs too?
+		if (width % 8 != 0) {
+			fullWidth = width + (8 - (width % 8));
+		} else {
+			fullWidth = width;
+		}
+		if (height % 8 != 0) {
+			fullHeight = height + (8 - (height % 8));
+		} else {
+			fullHeight = height;
+		}
 		
 		//REMOVETHIS
 		System.out.println("width = " + width);
+		System.out.println("height = " + height);
 		System.out.println("fullWidth = " + fullWidth);
-		System.out.println("halfWidth = " + halfWidth);
-		
-		System.out.println("\nheight = " + height);
 		System.out.println("fullHeight = " + fullHeight);
-		System.out.println("halfHeight = " + halfHeight);
+				
+		halfWidth = fullWidth / 2;
+		halfHeight = fullHeight / 2;
+		
+		//REMOVETHIS
+		System.out.println("halfWidth pre pad = " + halfWidth);
+		System.out.println("halfHeight pre pad = " + halfHeight);
+				
+		// padded to be divisible by 8
+		if (halfWidth % 8 != 0) {
+			halfWidth = halfWidth + (8 - (halfWidth % 8));
+		} 
+		if (halfHeight % 8 != 0) {
+			halfHeight = halfHeight + (8 - (halfHeight % 8));
+		} 
+		
+		//REMOVETHIS
+		System.out.println("halfWidth post pad = " + halfWidth);
+		System.out.println("halfHeight post pad = " + halfHeight);
 		
 		// ------ INPUT ------
 		inpR444 = new int[fullHeight][fullWidth];
@@ -172,15 +192,13 @@ public class ColorImageDCTCoder {
 		inpCb444 = new double[fullHeight][fullWidth];
 		inpCr444 = new double[fullHeight][fullWidth];
 		
-		// TODO: are these dimensions correct?
-		inpCb420 = new double[fullHeight][halfWidth];
-		inpCr420 = new double[fullHeight][halfWidth];
+		inpCb420 = new double[halfHeight][halfWidth];
+		inpCr420 = new double[halfHeight][halfWidth];
 		
 		// ------ QUANT ------
 		quantY = new int[fullHeight][fullWidth];
-		// TODO: are these dimensions correct?
-		quantCb = new int[fullHeight][halfWidth];
-		quantCr = new int[fullHeight][halfWidth];
+		quantCb = new int[halfHeight][halfWidth];
+		quantCr = new int[halfHeight][halfWidth];
 		
 		// ------ OUTPUT ------
 		outR444 = new int[fullHeight][fullWidth];
@@ -191,9 +209,8 @@ public class ColorImageDCTCoder {
 		outCb444 = new double[fullHeight][fullWidth];
 		outCr444 = new double[fullHeight][fullWidth];
 		
-		// TODO: are these dimensions correct?
-		outCb420 = new double[fullHeight][halfWidth];
-		outCr420 = new double[fullHeight][halfWidth];
+		outCb420 = new double[halfHeight][halfWidth];
+		outCr420 = new double[halfHeight][halfWidth];
 		
 		return 0;
 	}
@@ -213,26 +230,35 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to extract R/G/B planes from MImage
 	protected void extractPlanes(MImage inpImg, int R444[][], int G444[][], int B444[][], int width, int height) {
+		/* REMOVETHIS?
 		int x,y;
 		x = 0;
 		y = 0;
+		*/
+		
 		int[] rgb = new int[3];
-		for (y = 0; y < height; y++) {
-			for (x = 0; x < width; x++) {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
 				inpImg.getPixel(x, y, rgb);
 				R444[y][x] =  rgb[0];
 				G444[y][x] =  rgb[1];
 				B444[y][x] =  rgb[2];
 			}
-		}
+		} 
+		/* if the original image dimensions are not divisible by 8,
+		 * the rest is padded with zeros, which is Java's default value.
+		 */
 		
+		/* REMOVETHIS?
 		for (y = y; y < fullHeight; y++) {
 			for (x = x; x < fullWidth; x++) {
+				// pad with black pixels
 				R444[y][x] =  0;
 				G444[y][x] =  0;
 				B444[y][x] =  0;
 			}
 		}
+		*/
 	}
 
 	// TOFIX - add code to combine R/G/B planes to MImage
@@ -386,8 +412,17 @@ public class ColorImageDCTCoder {
 
 	// TOFIX - add code to convert chrominance from 444 to 420
 	protected void convert444To420(double CbCr444[][], double CbCr420[][], int width, int height) {
-		// TODO: figure this out
-		CbCr420 = CbCr444; // REMOVETHIS;
+		
+		for (int y = 0; y < halfHeight; y++) {
+			for (int x = 0; x < halfWidth; x++) {
+				
+				if ((y * 2) < height && (x * 2) < width) {
+					// we're in range, so subsample
+					CbCr420[y][x] = CbCr444[y * 2][x * 2];
+				}
+				// else the padding is zeros, which is Java's default value
+			}
+		}
 	}
 
 	// TOFIX - add code to convert chrominance from 420 to 444
@@ -526,7 +561,7 @@ public class ColorImageDCTCoder {
 				// one block in the image
 				for (y = 0; y < blockSize; y++) {
 					for (x = 0; x < blockSize; x++) {
-						System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
+						//System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
 						plane[b + y][a + x] = blockPixel;
 					}
 				}
