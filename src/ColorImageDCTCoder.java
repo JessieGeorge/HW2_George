@@ -70,8 +70,6 @@ public class ColorImageDCTCoder {
 		// allocate work memory space
 		int width = inpImg.getW();
 		int height = inpImg.getH();
-		imgWidth = width;
-		imgHeight = height;
 		allocate(width, height);
 		
 		// create output image
@@ -145,10 +143,16 @@ public class ColorImageDCTCoder {
 	// TOFIX - add code to set up full/half resolutions and allocate memory space
 	// used in DCT-based coding
 	protected int allocate(int width, int height) {
+		imgWidth = width;
+		imgHeight = height;
+		
+		// padded to be divisible by 8
 		fullWidth = width + (8 - (width % 8));
 		fullHeight = height + (8 - (height % 8));
+		
 		halfWidth = fullWidth / 2;
-		halfHeight = fullHeight / 2;
+		halfHeight = fullHeight / 2; // TODO: Do we ever use this?
+		// TODO: pad halfs too?
 		
 		//REMOVETHIS
 		System.out.println("width = " + width);
@@ -159,6 +163,7 @@ public class ColorImageDCTCoder {
 		System.out.println("fullHeight = " + fullHeight);
 		System.out.println("halfHeight = " + halfHeight);
 		
+		// ------ INPUT ------
 		inpR444 = new int[fullHeight][fullWidth];
 		inpG444 = new int[fullHeight][fullWidth];
 		inpB444 = new int[fullHeight][fullWidth];
@@ -167,15 +172,15 @@ public class ColorImageDCTCoder {
 		inpCb444 = new double[fullHeight][fullWidth];
 		inpCr444 = new double[fullHeight][fullWidth];
 		
-		// TODO: change dimensions?
-		inpCb420 = new double[fullHeight][fullWidth];
-		inpCr420 = new double[fullHeight][fullWidth];
+		// TODO: are these dimensions correct?
+		inpCb420 = new double[fullHeight][halfWidth];
+		inpCr420 = new double[fullHeight][halfWidth];
 		
+		// ------ QUANT ------
 		quantY = new int[fullHeight][fullWidth];
-		
-		// TODO: change dimensions?
-		quantCb = new int[fullHeight][fullWidth];
-		quantCr = new int[fullHeight][fullWidth];
+		// TODO: are these dimensions correct?
+		quantCb = new int[fullHeight][halfWidth];
+		quantCr = new int[fullHeight][halfWidth];
 		
 		// ------ OUTPUT ------
 		outR444 = new int[fullHeight][fullWidth];
@@ -186,9 +191,9 @@ public class ColorImageDCTCoder {
 		outCb444 = new double[fullHeight][fullWidth];
 		outCr444 = new double[fullHeight][fullWidth];
 		
-		// TODO: change dimensions?
-		outCb420 = new double[fullHeight][fullWidth];
-		outCr420 = new double[fullHeight][fullWidth];
+		// TODO: are these dimensions correct?
+		outCb420 = new double[fullHeight][halfWidth];
+		outCr420 = new double[fullHeight][halfWidth];
 		
 		return 0;
 	}
@@ -512,7 +517,6 @@ public class ColorImageDCTCoder {
 						firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
 						secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
 						
-						// TODO: Change this
 						sum += Cu * Cv * idctCoef * firstCos * secondCos;
 					}
 				}
