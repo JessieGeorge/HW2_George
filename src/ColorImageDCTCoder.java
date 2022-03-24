@@ -166,13 +166,26 @@ public class ColorImageDCTCoder {
 		inpCb420 = new double[fullHeight][fullWidth];
 		inpCr420 = new double[fullHeight][fullWidth];
 		
+		quantY = new int[fullHeight][fullWidth];
+		
+		// TODO: change dimensions?
+		quantCb = new int[fullHeight][fullWidth];
+		quantCr = new int[fullHeight][fullWidth];
+		
 		return 0;
 	}
 
 	// TOFIX - add code to set up work quantization table
 	protected void setWorkQuantTable(double n) {
 		
-		quantTableY 
+		double compressionQuality = Math.pow(2, n);
+		
+		for (int i = 0; i < blockSize; i++) {
+			for (int j = 0; j < blockSize; j++) {
+				quantTableY[i][j] *= compressionQuality;
+				quantTableC[i][j] *= compressionQuality;
+			}
+		}
 	}
 
 	// TOFIX - add code to extract R/G/B planes from MImage
@@ -414,7 +427,13 @@ public class ColorImageDCTCoder {
 						dctCoef[v][u] = clip(dctCoef[v][u], 
 								dctCoefMinValue, dctCoefMaxValue);
 						
-						// TODO: quantization
+						if (chroma) {
+							quant[b + v][a + u] = (int)Math.round(dctCoef[v][u] 
+									/ quantTableC[v][u]); 
+						} else {
+							quant[b + v][a + u] = (int)Math.round(dctCoef[v][u] 
+									/ quantTableY[v][u]); 
+						}
 					}
 				}
 				
