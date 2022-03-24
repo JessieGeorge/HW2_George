@@ -432,11 +432,38 @@ public class ColorImageDCTCoder {
 				// else the padding is zeros, which is Java's default value
 			}
 		}
+		
+		/*
+		// REMOVETHIS
+		System.out.println("\nPRINTING CbCr444:\n");
+		for (int y = 0; y < fullHeight; y++) {
+			for (int x = 0; x < fullWidth; x++) {
+				System.out.print(CbCr444[y][x] + " ");
+			}
+			System.out.println();
+		}
+		
+		System.out.println("\nPRINTING CbCr420:\n");
+		for (int y = 0; y < halfHeight; y++) {
+			for (int x = 0; x < halfWidth; x++) {
+				System.out.print(CbCr420[y][x] + " ");
+			}
+			System.out.println();
+		}
+		*/
 	}
 
 	// TOFIX - add code to convert chrominance from 420 to 444
 	protected void convert420To444(double CbCr420[][], double CbCr444[][], int width, int height) {
 		
+		// REMOVETHIS? Attempt2
+		for (int y = 0; y < halfHeight; y++) {
+			for (int x = 0; x < halfWidth; x++) {
+				CbCr444[y][x] = CbCr420[y][x];
+			}
+		}
+		
+		/* REMOVETHIS? Attempt1 
 		for (int y = 0; y < fullHeight / 2; y++) {
 			for (int x = 0; x < fullWidth / 2; x++) {
 				CbCr444[y][x] = CbCr420[y][x];
@@ -445,6 +472,36 @@ public class ColorImageDCTCoder {
 				CbCr444[y + 1][x + 1] = CbCr420[y][x];
 			}
 		}
+		*/
+		
+		/*
+		// REMOVETHIS
+		System.out.println("\nPRINTING CbCr420:\n");
+		System.out.println(Arrays.toString(CbCr420[halfHeight-1]));
+		System.out.println("\nPRINTING CbCr444:\n");
+		System.out.println(Arrays.toString(CbCr444[fullHeight-2]));
+		System.out.println(Arrays.toString(CbCr444[fullHeight-1]));
+		*/
+		
+		
+		// REMOVETHIS
+		System.out.println("\nPRINTING CbCr420:\n");
+		for (int y = 0; y < halfHeight; y++) {
+			for (int x = 0; x < halfWidth; x++) {
+				System.out.print(CbCr420[y][x] + " ");
+			}
+			System.out.println();
+		}
+		
+		System.out.println("\nPRINTING CbCr444:\n");
+		for (int y = 0; y < fullHeight; y++) {
+			for (int x = 0; x < fullWidth; x++) {
+				System.out.print(CbCr444[y][x] + " ");
+			}
+			System.out.println();
+		}
+		//System.exit(1);
+		
 	}
 
 	// TOFIX - add code to encode one plane with 8x8 FDCT and quantization
