@@ -130,8 +130,8 @@ public class ColorImageDCTCoder {
 		
 		// REMOVETHIS
 		//outY444 = inpY444;
-		outCb444 = inpCb444;
-		outCr444 = inpCr444;
+		//outCb444 = inpCb444;
+		//outCr444 = inpCr444;
 		
 		/*
 		outR444 = inpR444;
@@ -456,28 +456,24 @@ public class ColorImageDCTCoder {
 			System.out.println();
 		}
 		*/
-		
 	}
 
 	// TOFIX - add code to convert chrominance from 420 to 444
 	protected void convert420To444(double CbCr420[][], double CbCr444[][], int width, int height) {
 		
-		/*
-		// REMOVETHIS? Attempt2
-		for (int y = 0; y < halfHeight; y++) {
-			for (int x = 0; x < halfWidth; x++) {
-				CbCr444[y][x] = CbCr420[y][x];
-			}
-		}
-		*/
-		
-		// REMOVETHIS? Attempt1 
 		for (int y = 0; y < fullHeight / 2; y++) {
 			for (int x = 0; x < fullWidth / 2; x++) {
-				CbCr444[y][x] = CbCr420[y][x];
-				CbCr444[y][x + 1] = CbCr420[y][x];
-				CbCr444[y + 1][x] = CbCr420[y][x];
-				CbCr444[y + 1][x + 1] = CbCr420[y][x];
+				//y = 7; x = 7; // REMOVETHIS
+				//System.out.println("TEST: CbCr420[" + y + "][" + x + "] = " + CbCr420[y][x]); // REMOVETHIS
+				//System.out.println("TEST: Before: CbCr444 = " + Arrays.deepToString(CbCr444)); // REMOVETHIS
+				//System.out.println("TEST: Before: y = " + y + " x = " + x); // REMOVETHIS
+				CbCr444[y * 2][x * 2] = CbCr420[y][x];
+				CbCr444[y * 2][(x * 2) + 1] = CbCr420[y][x];
+				CbCr444[(y * 2) + 1][x * 2] = CbCr420[y][x];
+				CbCr444[(y * 2) + 1][(x * 2) + 1] = CbCr420[y][x];
+				//System.out.println("TEST: After: y = " + y + " x = " + x); // REMOVETHIS
+				//System.out.println("TEST: After: CbCr444 = " + Arrays.deepToString(CbCr444)); // REMOVETHIS
+				//System.exit(1); // REMOVETHIS
 			}
 		}
 		
@@ -489,8 +485,7 @@ public class ColorImageDCTCoder {
 		System.out.println(Arrays.toString(CbCr444[fullHeight-2]));
 		System.out.println(Arrays.toString(CbCr444[fullHeight-1]));
 		*/
-		
-		
+		/*
 		// REMOVETHIS
 		System.out.println("CONVERT 420 TO 444:");
 		System.out.println("\nPRINTING CbCr420:\n");
@@ -509,7 +504,7 @@ public class ColorImageDCTCoder {
 			System.out.println();
 		}
 		//System.exit(1);
-		
+		*/
 	}
 
 	// TOFIX - add code to encode one plane with 8x8 FDCT and quantization
