@@ -529,26 +529,6 @@ public class ColorImageDCTCoder {
 		for (int b = 0; b < height; b = b + blockSize) {
 			for (int a = 0; a < width; a = a + blockSize) {
 				
-				sum = 0;
-				// one block in the image
-				for (int y = 0; y < blockSize; y++) {
-					v = y;
-					
-					for (int x = 0; x < blockSize; x++) {
-						u = x;
-						
-						//System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
-						// one pixel in the block
-						blockPixel = plane[b + y][a + x];
-						
-						// TODO: should this be in another uv loop?
-						firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
-						secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
-						
-						sum += blockPixel * firstCos * secondCos;
-					}
-				}
-				
 				// one block in the image
 				for (v = 0; v < blockSize; v++) {
 					if (v == 0) {
@@ -564,11 +544,27 @@ public class ColorImageDCTCoder {
 							Cu = 1.0;
 						}
 						
+						sum = 0;
+						// one block in the image
+						for (int y = 0; y < blockSize; y++) {
+							for (int x = 0; x < blockSize; x++) {
+								//System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
+								// one pixel in the block
+								blockPixel = plane[b + y][a + x];
+								
+								firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
+								secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
+								
+								sum += blockPixel * firstCos * secondCos;
+							}
+						}
+						
 						dctCoef[v][u] = ((Cu * Cv) / 4.0) * sum;
 						
 						dctCoef[v][u] = clip(dctCoef[v][u], 
 								dctCoefMinValue, dctCoefMaxValue);
 						
+						// quantization
 						if (chroma) {
 							quant[b + v][a + u] = (int)Math.round(dctCoef[v][u] 
 									/ quantTableC[v][u]); 
@@ -601,49 +597,48 @@ public class ColorImageDCTCoder {
 		for (int b = 0; b < height; b = b + blockSize) {
 			for (int a = 0; a < width; a = a + blockSize) {
 				
-				sum = 0;
-				// TODO: should this be in another xy loop?
-				// one block in the image
-				for (int v = 0; v < blockSize; v++) {
-					y = v;
-					
-					if (v == 0) {
-						Cv = 1.0 / Math.sqrt(2);
-					} else {
-						Cv = 1.0;
-					}
-					
-					for (int u = 0; u < blockSize; u++) {
-						x = u;
-						
-						if (u == 0) {
-							Cu = 1.0 / Math.sqrt(2);
-						} else {
-							Cu = 1.0;
-						}
-						
-						//System.out.println("TEST: b = " + b + " v = " + v + " a = " + a + " u = " + u); //REMOVETHIS
-						// the quantized Forward DCT coeffient for one pixel in the block
-						dctCoef = quant[b + v][a + u];
-						// convert to dequantized Inverse DCT coeffient for one pixel in the block
-						if (chroma) {
-							idctCoef = dctCoef * quantTableC[v][u]; 
-						} else {
-							idctCoef = dctCoef * quantTableY[v][u];  
-						}
-						
-						firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
-						secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
-						
-						sum += Cu * Cv * idctCoef * firstCos * secondCos;
-					}
-				}
-				
-				blockPixel = sum / 4.0;
-				
 				// one block in the image
 				for (y = 0; y < blockSize; y++) {
 					for (x = 0; x < blockSize; x++) {
+						
+						sum = 0;
+						// one block in the image
+						for (int v = 0; v < blockSize; v++) {
+							y = v;
+							
+							if (v == 0) {
+								Cv = 1.0 / Math.sqrt(2);
+							} else {
+								Cv = 1.0;
+							}
+							
+							for (int u = 0; u < blockSize; u++) {
+								x = u;
+								
+								if (u == 0) {
+									Cu = 1.0 / Math.sqrt(2);
+								} else {
+									Cu = 1.0;
+								}
+								
+								//System.out.println("TEST: b = " + b + " v = " + v + " a = " + a + " u = " + u); //REMOVETHIS
+								// the quantized Forward DCT coeffient for one pixel in the block
+								dctCoef = quant[b + v][a + u];
+								// convert to dequantized Inverse DCT coeffient for one pixel in the block
+								if (chroma) {
+									idctCoef = dctCoef * quantTableC[v][u]; 
+								} else {
+									idctCoef = dctCoef * quantTableY[v][u];  
+								}
+								
+								firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
+								secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
+								
+								sum += Cu * Cv * idctCoef * firstCos * secondCos;
+							}
+						}
+						
+						blockPixel = sum / 4.0;
 						//System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
 						plane[b + y][a + x] = blockPixel;
 					}
