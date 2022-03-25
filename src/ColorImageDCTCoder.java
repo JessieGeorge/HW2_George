@@ -126,18 +126,22 @@ public class ColorImageDCTCoder {
 		// D3. Cb/Cr 420 -> 444, YCbCr -> RGB
 		convert420To444(outCb420, outCb444, fullWidth, fullHeight);
 		convert420To444(outCr420, outCr444, fullWidth, fullHeight);
-		convertYCbCr2RGB(outY444, outCb444, outCr444, outR444, outG444, outB444, fullWidth, fullHeight);	
 		
-		/*
+		
 		// REMOVETHIS
-		outY444 = inpY444;
+		//outY444 = inpY444;
 		outCb444 = inpCb444;
 		outCr444 = inpCr444;
+		
+		/*
 		outR444 = inpR444;
 		outG444 = inpG444;
 		outB444 = inpB444;
 		*/
 		
+		
+		convertYCbCr2RGB(outY444, outCb444, outCr444, outR444, outG444, outB444, fullWidth, fullHeight);	
+				
 		// D4. combine R/G/B planes into output image
 		combinePlanes(outImg, outR444, outG444, outB444, imgWidth, imgHeight);
 		return 0;
@@ -435,6 +439,7 @@ public class ColorImageDCTCoder {
 		
 		/*
 		// REMOVETHIS
+		System.out.println("CONVERT 444 TO 420:");		
 		System.out.println("\nPRINTING CbCr444:\n");
 		for (int y = 0; y < fullHeight; y++) {
 			for (int x = 0; x < fullWidth; x++) {
@@ -451,19 +456,22 @@ public class ColorImageDCTCoder {
 			System.out.println();
 		}
 		*/
+		
 	}
 
 	// TOFIX - add code to convert chrominance from 420 to 444
 	protected void convert420To444(double CbCr420[][], double CbCr444[][], int width, int height) {
 		
+		/*
 		// REMOVETHIS? Attempt2
 		for (int y = 0; y < halfHeight; y++) {
 			for (int x = 0; x < halfWidth; x++) {
 				CbCr444[y][x] = CbCr420[y][x];
 			}
 		}
+		*/
 		
-		/* REMOVETHIS? Attempt1 
+		// REMOVETHIS? Attempt1 
 		for (int y = 0; y < fullHeight / 2; y++) {
 			for (int x = 0; x < fullWidth / 2; x++) {
 				CbCr444[y][x] = CbCr420[y][x];
@@ -472,7 +480,6 @@ public class ColorImageDCTCoder {
 				CbCr444[y + 1][x + 1] = CbCr420[y][x];
 			}
 		}
-		*/
 		
 		/*
 		// REMOVETHIS
@@ -485,6 +492,7 @@ public class ColorImageDCTCoder {
 		
 		
 		// REMOVETHIS
+		System.out.println("CONVERT 420 TO 444:");
 		System.out.println("\nPRINTING CbCr420:\n");
 		for (int y = 0; y < halfHeight; y++) {
 			for (int x = 0; x < halfWidth; x++) {
@@ -533,6 +541,7 @@ public class ColorImageDCTCoder {
 						// one pixel in the block
 						blockPixel = plane[b + y][a + x];
 						
+						// TODO: should this be in another uv loop?
 						firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
 						secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
 						
@@ -555,7 +564,7 @@ public class ColorImageDCTCoder {
 							Cu = 1.0;
 						}
 						
-						dctCoef[v][u] = ((Cu * Cv) / 4.0) + sum;
+						dctCoef[v][u] = ((Cu * Cv) / 4.0) * sum;
 						
 						dctCoef[v][u] = clip(dctCoef[v][u], 
 								dctCoefMinValue, dctCoefMaxValue);
@@ -593,6 +602,7 @@ public class ColorImageDCTCoder {
 			for (int a = 0; a < width; a = a + blockSize) {
 				
 				sum = 0;
+				// TODO: should this be in another xy loop?
 				// one block in the image
 				for (int v = 0; v < blockSize; v++) {
 					y = v;
