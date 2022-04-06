@@ -439,6 +439,18 @@ public class ColorImageDCTCoder {
 	// TOFIX - add code to convert chrominance from 444 to 420
 	protected void convert444To420(double CbCr444[][], double CbCr420[][], int width, int height) {
 		
+		for (int y = 0; y < height; y += 2) {
+			for (int x = 0; x < width; x += 2) {
+				
+				// average 4 pixels
+				CbCr420[y/2][x/2] = (CbCr444[y][x] 
+										+ CbCr444[y][x + 1] 
+										+ CbCr444[y + 1][x]
+										+ CbCr444[y + 1][x + 1]
+									) / 4;
+			}
+		}
+		/*
 		for (int y = 0; y < halfHeight; y++) {
 			for (int x = 0; x < halfWidth; x++) {
 				
@@ -449,6 +461,7 @@ public class ColorImageDCTCoder {
 				// else the padding is zeros, which is Java's default value
 			}
 		}
+		*/
 		
 		/*
 		// REMOVETHIS
