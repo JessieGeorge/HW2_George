@@ -21,6 +21,8 @@ public class ColorImageVectorQuantizer {
 	private int quantVectors[][]; // vectors for quantized image
 	private int quantIndices[]; // quantized indices for blocks
 
+	// He said the most important part of VQ is that each row is a vector. We process row by row.
+	
 	public ColorImageVectorQuantizer() {
 		blkWidth = 2;
 		blkHeight = 2;
@@ -124,11 +126,14 @@ public class ColorImageVectorQuantizer {
 			
 			// find average
 			for (int i = 0; i < numBlock; i++) {
+				/*
 				if (index[i] == k) {
+					
 					for (int j ...) {
 						sum[j] += S[i][j];
 					}
 				}
+				*/
 			}
 			
 			/*
