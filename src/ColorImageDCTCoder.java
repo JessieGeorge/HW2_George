@@ -102,12 +102,25 @@ public class ColorImageDCTCoder {
 		convert444To420(inpCr444, inpCr420, fullWidth, fullHeight);
 		// E3/4. 8x8-based forward DCT, quantization
 		
+		// REMOVETHIS 
+		//System.out.println("BEFORE encodePlane");
+		//System.out.println("PRINTING Y:\n" + Arrays.deepToString(inpY444));
+		//System.out.println("PRINTING Cb420:\n" + Arrays.deepToString(inpCb420));
+		//System.out.println("PRINTING Cr420:\n" + Arrays.deepToString(inpCr420));
+		
 		System.out.println("Sending Y to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpY444, quantY, fullWidth, fullHeight, false);
 		System.out.println("Done with Y. Sending Cb to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpCb420, quantCb, halfWidth, halfHeight, true);
 		System.out.println("Done with Cb. Sending Cr to encodePlane ... "); // REMOVETHIS
 		encodePlane(inpCr420, quantCr, halfWidth, halfHeight, true);
+		
+		// REMOVETHIS 
+		//System.out.println("\nAFTER encodePlane");
+		//System.out.println("PRINTING quantY:\n" + Arrays.deepToString(quantY));
+		//System.out.println("PRINTING quantCb:\n" + Arrays.deepToString(quantCb));
+		//System.out.println("PRINTING quantCr:\n" + Arrays.deepToString(quantCr));
+				
 		return 0;
 	}
 
@@ -543,6 +556,8 @@ public class ColorImageDCTCoder {
 						// one block in the image
 						for (int y = 0; y < blockSize; y++) {
 							for (int x = 0; x < blockSize; x++) {
+								//System.out.println("TEST: b = " + b + " a = " + a + " v = " + v + " u = " + u + " y = " + y + " x = " + x); // REMOVETHIS
+								
 								//System.out.println("TEST: b = " + b + " y = " + y + " a = " + a + " x = " + x); //REMOVETHIS
 								// one pixel in the block
 								blockPixel = plane[b + y][a + x];
@@ -550,22 +565,55 @@ public class ColorImageDCTCoder {
 								firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
 								secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
 								
+								/*
+								System.out.println("blockPixel = " + blockPixel); // REMOVETHIS
+								System.out.println("firstCos = " + firstCos); // REMOVETHIS
+								System.out.println("secondCos = " + secondCos); // REMOVETHIS
+								*/
+								
 								sum += blockPixel * firstCos * secondCos;
 							}
 						}
 						
+						
+						System.out.println("TEST: b = " + b + " a = " + a + " v = " + v + " u = " + u); // REMOVETHIS
+						System.out.println("sum = " + sum); // REMOVETHIS
+						
+						
 						dctCoef[v][u] = ((Cu * Cv) / 4.0) * sum;
+						
+						System.out.println("dctCoef[" + v + "][" + u + "] = " + dctCoef[v][u]); // REMOVETHIS
+							
 						
 						dctCoef[v][u] = clip(dctCoef[v][u], 
 								dctCoefMinValue, dctCoefMaxValue);
+						
+						System.out.println("After Clip: dctCoef[" + v + "][" + u + "] = " + dctCoef[v][u]); // REMOVETHIS
 						
 						// quantization
 						if (chroma) {
 							quant[b + v][a + u] = (int)Math.round(dctCoef[v][u] 
 									/ quantTableC[v][u]); 
+							
+							System.out.println("quantTableC[" + v + "][" + u + "] = " + quantTableC[v][u]); // REMOVETHIS
+							System.out.println("before int casting, quant is " + Math.round(dctCoef[v][u] 
+									/ quantTableC[v][u]));
+							System.out.println("quant[" + (b+v) + "][" + (a+u) + "] = " + quant[b + v][a + u]); // REMOVETHIS
+							
 						} else {
 							quant[b + v][a + u] = (int)Math.round(dctCoef[v][u] 
 									/ quantTableY[v][u]); 
+							
+							System.out.println("quantTableY[" + v + "][" + u + "] = " + quantTableY[v][u]); // REMOVETHIS
+							System.out.println("before int casting, quant is " + Math.round(dctCoef[v][u] 
+									/ quantTableY[v][u]));
+							System.out.println("quant[" + (b+v) + "][" + (a+u) + "] = " + quant[b + v][a + u]); // REMOVETHIS
+						}
+						
+						// REMOVETHIS
+						if (u == 1) {
+							System.out.println("I'M EXITING!");
+							System.exit(1);
 						}
 					}
 				}
