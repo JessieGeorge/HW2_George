@@ -61,6 +61,18 @@ public class ColorImageVectorQuantizer {
 	protected int allocate(int width, int height) {
 		imgWidth = width;
 		imgHeight = height;
+		
+		// TODO: careful about non-divisible by block size, it should still occupy a block.
+		numBlock = (imgWidth * imgHeight) / (blkWidth * blkHeight); 
+		
+		codeBook = new int[numCluster][numDimension];
+		// TODO: initialize codeBook with random number .. not sure where this goes.
+		
+		inputVectors = new int[numBlock][numDimension];
+		quantVectors = new int[numBlock][numDimension];
+		
+		quantIndices = new int[numBlock];
+		
 		return 0;
 	}
 
@@ -78,6 +90,54 @@ public class ColorImageVectorQuantizer {
 
 	// TOFIX - add code to train codebook with K-means clustering algorithm
 	protected void train(int vectors[][], int count) {
+	
+		// quantize step 1 - not sure where this goes, but it looks like K-means algo
+		for (int i = 0; i < numBlock; i++) {
+			// work on ith block
+			int bestRow;
+			int bestDist = Integer.MAX_VALUE;
+			for (int k = 0; k < numCluster; k++) {
+				// TODO: calculate dist between Si and Ck. May not need squareroot, since we only care about which is bigger.
+				// Not sure what S is - sample vector i.e inputVectors?, C is the codeBook.
+				
+				int sum = 0;
+				
+				for (int j = 0; j < 12; j++) {
+					int diff = inputVectors[i][j] - codeBook[k][j];
+					sum += diff * diff;
+				}
+				
+				if (bestDist > sum) {
+					bestDist = sum;
+					bestRow = k;
+				}
+			}
+			
+			// TODO: store bestRow to index[i]
+		}
+		
+		
+		// step 2 - update codeBook ... not sure where this goes
+		for (int k = 0; k < 256; k++) {
+			int countVec = 0; // how many vectors assigned to this cluster
+			int[] sum = new int[12];
+			
+			// find average
+			for (int i = 0; i < numBlock; i++) {
+				if (index[i] == k) {
+					for (int j ...) {
+						sum[j] += S[i][j];
+					}
+				}
+			}
+			
+			/*
+			 * TODO:
+			 
+			codeBook[k] = sum[?] / countVec;
+			This is a vector.
+			*/
+		}
 	}
 
 	// TOFIX - add code to display codebook
