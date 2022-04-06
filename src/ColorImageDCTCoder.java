@@ -623,11 +623,13 @@ public class ColorImageDCTCoder {
 							System.out.println("quant[" + (b+v) + "][" + (a+u) + "] = " + quant[b + v][a + u]); // REMOVETHIS
 						}
 						
+						/*
 						// REMOVETHIS
 						if (u == 1) {
 							System.out.println("I'M EXITING!");
 							System.exit(1);
 						}
+						*/
 					}
 				}
 				
