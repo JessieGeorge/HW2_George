@@ -59,6 +59,8 @@ public class ColorImageVectorQuantizer {
 	
 	// TOFIX - add code to set up work space
 	protected int allocate(int width, int height) {
+		imgWidth = width;
+		imgHeight = height;
 		return 0;
 	}
 
