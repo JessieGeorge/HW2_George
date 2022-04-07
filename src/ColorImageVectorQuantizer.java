@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 /*******************************************************
  * CS4551 Multimedia Software Systems
@@ -94,60 +95,60 @@ public class ColorImageVectorQuantizer {
 		
 		// Initialize codeBook with random number
 		for (int y = 0; y < numCluster; y++) {
-			int randInt = (int)(Math.random()); // TODO: put an int range? This will just be 0/1
+			int randInt = (int)(Math.random() * 255); // TODO: put an int range? This will just be 0/1
 			
 			for (int x = 0; x < numDimension; x++) {
 				codeBook[y][x] = randInt;
 			}
 		}
 		
-		// quantize step 1 - not sure where this goes, but it looks like K-means algo
+		// Quantize
 		for (int i = 0; i < numBlock; i++) {
-			// work on ith block
-			int bestRow;
-			int bestDist = Integer.MAX_VALUE;
+			
+			double bestDist = Double.MAX_VALUE;
+			int bestIndex = -1;
+			
 			for (int k = 0; k < numCluster; k++) {
-				// TODO: calculate dist between Si and Ck. May not need squareroot, since we only care about which is bigger.
-				// Not sure what S is - sample vector i.e inputVectors?, C is the codeBook.
 				
-				int sum = 0;
+				double sum = 0;
 				
-				for (int j = 0; j < 12; j++) {
+				for (int j = 0; j < numDimension; j++) {
 					int diff = inputVectors[i][j] - codeBook[k][j];
 					sum += diff * diff;
 				}
 				
-				if (bestDist > sum) {
-					bestDist = sum;
-					bestRow = k;
+				double dist = Math.sqrt(sum);
+				
+				if (bestDist < dist) {
+					bestDist = dist;
+					bestIndex = k;
 				}
 			}
 			
-			// TODO: store bestRow to index[i]
+			quantIndices[i] = bestIndex;
 		}
 		
-		
-		// step 2 - update codeBook ... not sure where this goes
-		for (int k = 0; k < 256; k++) {
-			int countVec = 0; // how many vectors assigned to this cluster
-			int[] sum = new int[12];
+		// Update codebook
+		double[] sum = new double[numDimension];
+		for (int k = 0; k < numCluster; k++) {
+			int countVec = 0; // number of input vectors assigned to kth cluster
 			
+			// clear sum to 0
+			Arrays.fill(sum, 0);
+
 			// find average
 			for (int i = 0; i < numBlock; i++) {
-				/*
-				if (index[i] == k) {
-					
-					for (int j ...) {
-						sum[j] += S[i][j];
-					}
+				if (quantIndices[i] == k) {
+					for (int j = 0; j < numDimension; j++) {
+						sum[j] += inputVectors[i][j];
+					}	
 				}
-				*/
 			}
 			
 			/*
 			 * TODO:
 			 
-			codeBook[k] = sum[?] / countVec;
+			codeBook[k] = (int)Math.round(sum[?] / countVec);
 			This is a vector.
 			*/
 		}
