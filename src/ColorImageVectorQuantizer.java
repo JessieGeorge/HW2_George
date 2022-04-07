@@ -64,11 +64,10 @@ public class ColorImageVectorQuantizer {
 		imgWidth = width;
 		imgHeight = height;
 		
-		// TODO: careful about non-divisible by block size, it should still occupy a block.
-		numBlock = (imgWidth * imgHeight) / (blkWidth * blkHeight); 
+		// make image size divisible by block size
+		numBlock = ((imgWidth + 1) / 2) * ((imgHeight + 1) / 2); 
 		
 		codeBook = new int[numCluster][numDimension];
-		// TODO: initialize codeBook with random number .. not sure where this goes.
 		
 		inputVectors = new int[numBlock][numDimension];
 		quantVectors = new int[numBlock][numDimension];
@@ -92,7 +91,16 @@ public class ColorImageVectorQuantizer {
 
 	// TOFIX - add code to train codebook with K-means clustering algorithm
 	protected void train(int vectors[][], int count) {
-	
+		
+		// Initialize codeBook with random number
+		for (int y = 0; y < numCluster; y++) {
+			int randInt = (int)(Math.random()); // TODO: put an int range? This will just be 0/1
+			
+			for (int x = 0; x < numDimension; x++) {
+				codeBook[y][x] = randInt;
+			}
+		}
+		
 		// quantize step 1 - not sure where this goes, but it looks like K-means algo
 		for (int i = 0; i < numBlock; i++) {
 			// work on ith block
