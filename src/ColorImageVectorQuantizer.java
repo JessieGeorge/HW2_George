@@ -45,6 +45,8 @@ public class ColorImageVectorQuantizer {
 		allocate(width, height);
 		// form vector from input image
 		image2Vectors(inputImage, inputVectors, imgWidth, imgHeight);
+		
+		/* TODO: UNCOMMENT
 		// train vector quantizer
 		train(inputVectors, numBlock);
 		// display trained codebook
@@ -55,6 +57,10 @@ public class ColorImageVectorQuantizer {
 		// dequantize indices back to vectors
 		dequantize(quantIndices, numBlock, quantVectors);
 		// write quantized image to file
+		 * 
+		 */
+		
+		quantVectors = inputVectors; // REMOVETHIS
 		MImage quantImage = new MImage(imgWidth, imgHeight);
 		vectors2Image(quantVectors, quantImage, width, height);
 		String quantName = token[0] + "-quant.ppm";
