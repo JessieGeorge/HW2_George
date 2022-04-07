@@ -49,8 +49,11 @@ public class ColorImageVectorQuantizer {
 		train(inputVectors, numBlock);
 		// display trained codebook
 		display();
+		/* TODO: should this be commented out or not?
 		// quantize input image vectors to indices
 		quantize(inputVectors, numBlock, quantIndices);
+		*/
+		
 		// TOFIX - add code to save indices as PPM file
 		// dequantize indices back to vectors
 		dequantize(quantIndices, numBlock, quantVectors);
@@ -213,6 +216,18 @@ public class ColorImageVectorQuantizer {
 			}
 		}
 		
+		for (int i = 0; i < maxIteration; i++) {
+			/*
+			 * TODO: break conditions
+			 * 
+			 * Iterate steps 2 & 3 until the algorithm meets a stopping condition 
+			 * (i.e. no data points change clusters, 
+			 * the sum of the distance is minimized, 
+			 * or the maximum number of iterations is reached.)
+			 */
+			// quantize input image vectors to indices
+			quantize(inputVectors, numBlock, quantIndices);
+		}
 		
 	}
 
@@ -236,7 +251,7 @@ public class ColorImageVectorQuantizer {
 				double sum = 0;
 				
 				for (int j = 0; j < numDimension; j++) {
-					int diff = inputVectors[i][j] - codeBook[k][j];
+					int diff = vectors[i][j] - codeBook[k][j];
 					sum += diff * diff;
 				}
 				
@@ -248,28 +263,28 @@ public class ColorImageVectorQuantizer {
 				}
 			}
 			
-			quantIndices[i] = bestIndex;
+			indices[i] = bestIndex;
 		}
 		
 		// Update codebook
 		double[] sum = new double[numDimension];
 		for (int k = 0; k < numCluster; k++) {
-			int countVec = 0; // number of input vectors assigned to kth cluster
+			count = 0; // number of input vectors assigned to kth cluster
 			
 			// clear sum to 0
 			Arrays.fill(sum, 0);
 
 			for (int i = 0; i < numBlock; i++) {
-				if (quantIndices[i] == k) {
+				if (indices[i] == k) {
 					for (int j = 0; j < numDimension; j++) {
-						sum[j] += inputVectors[i][j];
+						sum[j] += vectors[i][j];
 					}	
 				}
 			}
 			
 			for (int j = 0; j < numDimension; j++) {
 				// the average
-				codeBook[k][j] = (int)Math.round(sum[j]/countVec);
+				codeBook[k][j] = (int)Math.round(sum[j]/count);
 			}	
 		}
 	}
