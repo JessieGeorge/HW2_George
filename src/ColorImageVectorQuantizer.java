@@ -153,6 +153,9 @@ public class ColorImageVectorQuantizer {
 
 	// TOFIX - add code to display codebook
 	protected void display() {
+		System.out.println("Codebook:");
+		System.out.println(Arrays.deepToString(codeBook));
+		// TODO: change to table?
 	}
 
 	// TOFIX - add code to quantize vectors to indices
