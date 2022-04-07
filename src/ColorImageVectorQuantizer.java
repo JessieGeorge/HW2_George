@@ -136,7 +136,6 @@ public class ColorImageVectorQuantizer {
 			// clear sum to 0
 			Arrays.fill(sum, 0);
 
-			// find average
 			for (int i = 0; i < numBlock; i++) {
 				if (quantIndices[i] == k) {
 					for (int j = 0; j < numDimension; j++) {
@@ -145,12 +144,10 @@ public class ColorImageVectorQuantizer {
 				}
 			}
 			
-			/*
-			 * TODO:
-			 
-			codeBook[k] = (int)Math.round(sum[?] / countVec);
-			This is a vector.
-			*/
+			for (int j = 0; j < numDimension; j++) {
+				// the average
+				codeBook[k][j] = (int)Math.round(sum[j]/countVec);
+			}	
 		}
 	}
 
