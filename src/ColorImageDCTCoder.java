@@ -203,6 +203,8 @@ public class ColorImageDCTCoder {
 		System.out.println("halfWidth post pad = " + halfWidth);
 		System.out.println("halfHeight post pad = " + halfHeight);
 		
+		System.exit(1); // REMOVETHIS
+		
 		// ------ INPUT ------
 		inpR444 = new int[fullHeight][fullWidth];
 		inpG444 = new int[fullHeight][fullWidth];
@@ -487,8 +489,8 @@ public class ColorImageDCTCoder {
 	// TOFIX - add code to convert chrominance from 420 to 444
 	protected void convert420To444(double CbCr420[][], double CbCr444[][], int width, int height) {
 		
-		for (int y = 0; y < fullHeight / 2; y++) {
-			for (int x = 0; x < fullWidth / 2; x++) {
+		for (int y = 0; y < height / 2; y++) {
+			for (int x = 0; x < width / 2; x++) {
 				//y = 7; x = 7; // REMOVETHIS
 				//System.out.println("TEST: CbCr420[" + y + "][" + x + "] = " + CbCr420[y][x]); // REMOVETHIS
 				//System.out.println("TEST: Before: CbCr444 = " + Arrays.deepToString(CbCr444)); // REMOVETHIS
