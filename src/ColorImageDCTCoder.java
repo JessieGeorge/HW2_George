@@ -203,7 +203,7 @@ public class ColorImageDCTCoder {
 		System.out.println("halfWidth post pad = " + halfWidth);
 		System.out.println("halfHeight post pad = " + halfHeight);
 		
-		System.exit(1); // REMOVETHIS
+		//System.exit(1); // REMOVETHIS
 		
 		// ------ INPUT ------
 		inpR444 = new int[fullHeight][fullWidth];
@@ -343,7 +343,7 @@ public class ColorImageDCTCoder {
 				Cb[y][x] -= 0.5;
 				Cr[y][x] -= 0.5;
 				
-				// REMOVETHIS
+				// REMOVETHIS ... Testing
 				for (int i = 0; i < 3; i++) {
 					double val = 0;
 					String arr = "";
@@ -402,7 +402,7 @@ public class ColorImageDCTCoder {
 				G[y][x] = clip(G[y][x], 0, 255);
 				B[y][x] = clip(B[y][x], 0, 255);
 				
-				// REMOVETHIS
+				// REMOVETHIS ... Testing
 				for (int i = 0; i < 3; i++) {
 					double val = 0;
 					String arr = "";
@@ -452,18 +452,6 @@ public class ColorImageDCTCoder {
 									) / 4;
 			}
 		}
-		/*
-		for (int y = 0; y < halfHeight; y++) {
-			for (int x = 0; x < halfWidth; x++) {
-				
-				if ((y * 2) < height && (x * 2) < width) {
-					// we're in range, so subsample
-					CbCr420[y][x] = CbCr444[y * 2][x * 2];
-				}
-				// else the padding is zeros, which is Java's default value
-			}
-		}
-		*/
 		
 		/*
 		// REMOVETHIS
@@ -580,11 +568,11 @@ public class ColorImageDCTCoder {
 								firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
 								secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
 								
-								/*
+								
 								System.out.println("blockPixel = " + blockPixel); // REMOVETHIS
 								System.out.println("firstCos = " + firstCos); // REMOVETHIS
 								System.out.println("secondCos = " + secondCos); // REMOVETHIS
-								*/
+								
 								
 								sum += blockPixel * firstCos * secondCos;
 							}
@@ -611,8 +599,6 @@ public class ColorImageDCTCoder {
 									/ quantTableC[v][u]); 
 							
 							System.out.println("quantTableC[" + v + "][" + u + "] = " + quantTableC[v][u]); // REMOVETHIS
-							System.out.println("before int casting, quant is " + Math.round(dctCoef[v][u] 
-									/ quantTableC[v][u]));
 							System.out.println("quant[" + (b+v) + "][" + (a+u) + "] = " + quant[b + v][a + u]); // REMOVETHIS
 							
 						} else {
@@ -620,8 +606,6 @@ public class ColorImageDCTCoder {
 									/ quantTableY[v][u]); 
 							
 							System.out.println("quantTableY[" + v + "][" + u + "] = " + quantTableY[v][u]); // REMOVETHIS
-							System.out.println("before int casting, quant is " + Math.round(dctCoef[v][u] 
-									/ quantTableY[v][u]));
 							System.out.println("quant[" + (b+v) + "][" + (a+u) + "] = " + quant[b + v][a + u]); // REMOVETHIS
 						}
 						
