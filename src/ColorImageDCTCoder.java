@@ -104,7 +104,7 @@ public class ColorImageDCTCoder {
 	// decode one image
 	protected int decode(MImage outImg, double n) {
 		// set work quantization table
-		setWorkQuantTable(n); // TODO: Comment this out or not?
+		//setWorkQuantTable(n); // Commented this out since the quant tables were already set globally when called in encode function
 		// D1/2. 8x8-based dequantization, inverse DCT
 		decodePlane(quantY, outY444, fullWidth, fullHeight, false);
 		decodePlane(quantCb, outCb420, halfWidth, halfHeight, true);
