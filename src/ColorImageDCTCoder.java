@@ -649,7 +649,6 @@ public class ColorImageDCTCoder {
 						sum = 0;
 						// one block in the image
 						for (int v = 0; v < blockSize; v++) {
-							y = v;
 							
 							if (v == 0) {
 								Cv = 1.0 / Math.sqrt(2);
@@ -658,7 +657,6 @@ public class ColorImageDCTCoder {
 							}
 							
 							for (int u = 0; u < blockSize; u++) {
-								x = u;
 								
 								if (u == 0) {
 									Cu = 1.0 / Math.sqrt(2);
