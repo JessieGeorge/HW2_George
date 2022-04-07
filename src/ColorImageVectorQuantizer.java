@@ -12,15 +12,17 @@ import java.util.Arrays;
 
 public class ColorImageVectorQuantizer {
 	private int imgWidth, imgHeight; // image resolution
+	int fullWidth, fullHeight; // full image resolution (multiple of 2)
 	private int blkWidth, blkHeight; // block resolution
 	private int numBlock; // number of blocks in image
 	private int numDimension; // number of vector dimension in VQ
 	private int numCluster;// number of clusters in VQ
 	private int maxIteration; // maximum number of iteration in VQ training
 	private int[][] codeBook; // codebook in VQ
-	private int inputVectors[][]; // vectors from input image
-	private int quantVectors[][]; // vectors for quantized image
-	private int quantIndices[]; // quantized indices for blocks
+	private int[][] R, G, B; // RGB planes of the padded image
+	private int[][] inputVectors; // vectors from input image
+	private int[][] quantVectors; // vectors for quantized image
+	private int[] quantIndices; // quantized indices for blocks
 
 	// He said the most important part of VQ is that each row is a vector. We process row by row.
 	
@@ -64,11 +66,29 @@ public class ColorImageVectorQuantizer {
 	protected int allocate(int width, int height) {
 		imgWidth = width;
 		imgHeight = height;
+		System.out.println("imgWidth = " + imgWidth); // REMOVETHIS
+		System.out.println("imgHeight = " + imgHeight); // REMOVETHIS
 		
-		// make image size divisible by block size
-		numBlock = ((imgWidth + 1) / 2) * ((imgHeight + 1) / 2); 
+		// padded to be divisible by 2 based on block size
+		if (width % 2 != 0) {
+			fullWidth = width + 1;
+		} else {
+			fullWidth = width;
+		}
+		if (height % 2 != 0) {
+			fullHeight = height + 1;
+		} else {
+			fullHeight = height;
+		}
+		
+		numBlock = (fullWidth / 2) * (fullHeight / 2); 
+		System.out.println("numBlock = " + numBlock); // REMOVETHIS
 		
 		codeBook = new int[numCluster][numDimension];
+		
+		R = new int[fullHeight][fullWidth];
+		G = new int[fullHeight][fullWidth];
+		B = new int[fullHeight][fullWidth];
 		
 		inputVectors = new int[numBlock][numDimension];
 		quantVectors = new int[numBlock][numDimension];
@@ -80,10 +100,100 @@ public class ColorImageVectorQuantizer {
 
 	// TOFIX - add code to convert one image to vectors in VQ
 	protected void image2Vectors(MImage image, int vectors[][], int width, int height) {
+		
+		// rgb value of a single pixel
+		int[] rgb = new int[3];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				image.getPixel(x, y, rgb);
+				R[y][x] =  rgb[0];
+				G[y][x] =  rgb[1];
+				B[y][x] =  rgb[2];
+			}
+		}
+		/* if the original image dimensions are not divisible by 2,
+		 * the rest is padded with zeros, which is Java's default value.
+		 */
+		
+		int countBlock = 0;
+		for (int y = 0; y < fullHeight; y += blkHeight) {
+			for (int x = 0; x < fullWidth; x += blkWidth) {
+				// rgb values of a block of 4 neighbor pixels
+				
+				vectors[countBlock][0] = R[y][x];
+				vectors[countBlock][1] = G[y][x];
+				vectors[countBlock][2] = B[y][x];
+				
+				vectors[countBlock][3] = R[y][x + 1];
+				vectors[countBlock][4] = G[y][x + 1];
+				vectors[countBlock][5] = B[y][x + 1];
+				
+				vectors[countBlock][6] = R[y + 1][x];
+				vectors[countBlock][7] = G[y + 1][x];
+				vectors[countBlock][8] = B[y + 1][x];
+				
+				vectors[countBlock][9] = R[y + 1][x + 1];
+				vectors[countBlock][10] = G[y + 1][x + 1];
+				vectors[countBlock][11] = B[y + 1][x + 1];
+				
+				countBlock++;
+			}
+		}
+		
+		/*
+		// REMOVETHIS
+		for (int i = 0; i < numBlock; i++) {
+			System.out.print("inputVectors[" + i + "] =");
+			for (int j = 0; j < numDimension; j++) {
+				System.out.print(inputVectors[i][j] + " ");
+			}
+			System.out.println();
+		}
+		
+		System.out.println("I'm Exiting!");
+		System.exit(1);
+		*/
 	}
 
 	// TOFIX - add code to convert vectors to one image in VQ
 	protected void vectors2Image(int vectors[][], MImage image, int width, int height) {
+		
+		int countBlock = 0;
+		for (int y = 0; y < fullHeight; y += blkHeight) {
+			for (int x = 0; x < fullWidth; x += blkWidth) {
+				// rgb values of a block of 4 neighbor pixels
+				
+				R[y][x] = vectors[countBlock][0];
+				G[y][x] = vectors[countBlock][1];
+				B[y][x] = vectors[countBlock][2];
+				
+				R[y][x + 1] = vectors[countBlock][3];
+				G[y][x + 1] = vectors[countBlock][4];
+				B[y][x + 1] = vectors[countBlock][5];
+				
+				R[y + 1][x] = vectors[countBlock][6];
+				G[y + 1][x] = vectors[countBlock][7];
+				B[y + 1][x] = vectors[countBlock][8];
+				
+				R[y + 1][x + 1] = vectors[countBlock][9];
+				G[y + 1][x + 1] = vectors[countBlock][10];
+				B[y + 1][x + 1] = vectors[countBlock][11];
+				
+				countBlock++;
+			}
+		}
+		
+		// rgb value of a single pixel
+		int[] rgb = new int[3];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				rgb[0] = R[y][x];
+				rgb[1] = G[y][x];
+				rgb[2] = B[y][x];
+				image.setPixel(x, y, rgb);
+			}
+		}
+		
 	}
 
 	// TOFIX - add code to convert indices to one image in VQ
