@@ -49,10 +49,11 @@ public class ColorImageVectorQuantizer {
 		train(inputVectors, numBlock);
 		// display trained codebook
 		display();
-		/* TODO: should this be commented out or not?
+		/* TODO: uncomment this
 		// quantize input image vectors to indices
 		quantize(inputVectors, numBlock, quantIndices);
 		*/
+		System.exit(1); // REMOVETHIS
 		
 		// TOFIX - add code to save indices as PPM file
 		// dequantize indices back to vectors
@@ -216,6 +217,8 @@ public class ColorImageVectorQuantizer {
 			}
 		}
 		
+		int[] prevIndices = new int[numBlock];
+		int[] currentIndices = new int[numBlock];
 		for (int i = 0; i < maxIteration; i++) {
 			/*
 			 * TODO: break conditions
@@ -226,7 +229,7 @@ public class ColorImageVectorQuantizer {
 			 * or the maximum number of iterations is reached.)
 			 */
 			// quantize input image vectors to indices
-			quantize(inputVectors, numBlock, quantIndices);
+			quantize(inputVectors, numBlock, currentIndices);
 		}
 		
 	}
