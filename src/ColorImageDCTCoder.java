@@ -568,10 +568,11 @@ public class ColorImageDCTCoder {
 								firstCos = Math.cos(((2 * x + 1) * u * Math.PI) / 16.0);
 								secondCos = Math.cos(((2 * y + 1) * v * Math.PI) / 16.0);
 								
+								/*
 								System.out.println("blockPixel = " + blockPixel); // REMOVETHIS
 								System.out.println("firstCos = " + firstCos); // REMOVETHIS
 								System.out.println("secondCos = " + secondCos); // REMOVETHIS
-								
+								*/
 								
 								sum += blockPixel * firstCos * secondCos;
 							}
@@ -610,13 +611,13 @@ public class ColorImageDCTCoder {
 						
 						System.out.println(); // REMOVETHIS
 						
-						
+						/*
 						// REMOVETHIS
 						if (u == 1) {
 							System.out.println("I'M EXITING!");
 							System.exit(1);
 						}
-						
+						*/
 					}
 				}
 				
