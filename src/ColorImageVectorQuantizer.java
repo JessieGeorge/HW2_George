@@ -45,8 +45,6 @@ public class ColorImageVectorQuantizer {
 		allocate(width, height);
 		// form vector from input image
 		image2Vectors(inputImage, inputVectors, imgWidth, imgHeight);
-		
-		/* TODO: UNCOMMENT
 		// train vector quantizer
 		train(inputVectors, numBlock);
 		// display trained codebook
@@ -57,10 +55,7 @@ public class ColorImageVectorQuantizer {
 		// dequantize indices back to vectors
 		dequantize(quantIndices, numBlock, quantVectors);
 		// write quantized image to file
-		 * 
-		 */
-		
-		quantVectors = inputVectors; // REMOVETHIS
+		//quantVectors = inputVectors; // REMOVETHIS
 		MImage quantImage = new MImage(imgWidth, imgHeight);
 		vectors2Image(quantVectors, quantImage, width, height);
 		String quantName = token[0] + "-quant.ppm";
@@ -211,13 +206,25 @@ public class ColorImageVectorQuantizer {
 		
 		// Initialize codeBook with random number
 		for (int y = 0; y < numCluster; y++) {
-			int randInt = (int)(Math.random() * 255); // TODO: put an int range? This will just be 0/1
+			int randInt = (int)(Math.random() * 255);
 			
 			for (int x = 0; x < numDimension; x++) {
 				codeBook[y][x] = randInt;
 			}
 		}
 		
+		
+	}
+
+	// TOFIX - add code to display codebook
+	protected void display() {
+		System.out.println("Codebook:");
+		System.out.println(Arrays.deepToString(codeBook));
+		// TODO: change to table?
+	}
+
+	// TOFIX - add code to quantize vectors to indices
+	protected void quantize(int vectors[][], int count, int indices[]) {
 		// Quantize
 		for (int i = 0; i < numBlock; i++) {
 			
@@ -265,17 +272,6 @@ public class ColorImageVectorQuantizer {
 				codeBook[k][j] = (int)Math.round(sum[j]/countVec);
 			}	
 		}
-	}
-
-	// TOFIX - add code to display codebook
-	protected void display() {
-		System.out.println("Codebook:");
-		System.out.println(Arrays.deepToString(codeBook));
-		// TODO: change to table?
-	}
-
-	// TOFIX - add code to quantize vectors to indices
-	protected void quantize(int vectors[][], int count, int indices[]) {
 	}
 
 	// TOFIX - add code to dequantize indices to vectors
