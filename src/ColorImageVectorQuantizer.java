@@ -65,7 +65,7 @@ public class ColorImageVectorQuantizer {
 		dequantize(quantIndices, numBlock, quantVectors);
 		// write quantized image to file
 		//quantVectors = inputVectors; // REMOVETHIS
-		System.out.println("quantVectors = " + Arrays.deepToString(quantVectors));
+		//System.out.println("quantVectors = " + Arrays.deepToString(quantVectors)); // REMOVETHIS
 		MImage quantImage = new MImage(imgWidth, imgHeight);
 		vectors2Image(quantVectors, quantImage, width, height);
 		String quantName = token[0] + "-quant.ppm";
@@ -246,6 +246,14 @@ public class ColorImageVectorQuantizer {
 			 */
 			// quantize input image vectors to indices
 			quantize(inputVectors, numBlock, currentIndices);
+			
+			if (Arrays.equals(currentIndices, prevIndices)) {
+				// no data points changed clusters
+				System.out.println("NO DATA POINT CHANGED. BREAKING ON i = " + i); // REMOVETHIS
+				break;
+			}
+			
+			prevIndices = currentIndices;
 		}
 		
 	}
@@ -254,7 +262,6 @@ public class ColorImageVectorQuantizer {
 	protected void display() {
 		System.out.println("CODEBOOK:");
 		//System.out.println(Arrays.deepToString(codeBook)); // REMOVETHIS?
-		// TODO: change to table?
 		System.out.println("Index\tArray");
 		System.out.println("-------------------------------------------------");
 		for (int i = 0; i < numCluster; i++) {
@@ -283,7 +290,6 @@ public class ColorImageVectorQuantizer {
 				
 				//System.out.println("k = " + k + " dist = " + dist); // REMOVETHIS
 				
-				// TODO: double check comparison with Prof
 				if (dist < bestDist) {
 					bestDist = dist;
 					bestIndex = k;
