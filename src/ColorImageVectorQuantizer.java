@@ -24,8 +24,6 @@ public class ColorImageVectorQuantizer {
 	private int[][] quantVectors; // vectors for quantized image
 	private int[] quantIndices; // quantized indices for blocks
 
-	// He said the most important part of VQ is that each row is a vector. We process row by row.
-	
 	public ColorImageVectorQuantizer() {
 		blkWidth = 2;
 		blkHeight = 2;
@@ -52,10 +50,7 @@ public class ColorImageVectorQuantizer {
 		// quantize input image vectors to indices
 		quantize(inputVectors, numBlock, quantIndices);
 		
-		//System.out.println("quantIndices = " + Arrays.toString(quantIndices)); // REMOVETHIS
-		//System.exit(1); // REMOVETHIS
-		
-		// TOFIX - add code to save indices as PPM file
+		// save indices as PPM file
 		MImage indexImage = new MImage(fullWidth / 2, fullHeight / 2);
 		indices2Image(quantIndices, indexImage, fullWidth / 2, fullHeight / 2);
 		String indexName = token[0] + "-index.ppm";
@@ -64,8 +59,6 @@ public class ColorImageVectorQuantizer {
 		// dequantize indices back to vectors
 		dequantize(quantIndices, numBlock, quantVectors);
 		// write quantized image to file
-		//quantVectors = inputVectors; // REMOVETHIS
-		//System.out.println("quantVectors = " + Arrays.deepToString(quantVectors)); // REMOVETHIS
 		MImage quantImage = new MImage(imgWidth, imgHeight);
 		vectors2Image(quantVectors, quantImage, width, height);
 		String quantName = token[0] + "-quant.ppm";
@@ -73,12 +66,10 @@ public class ColorImageVectorQuantizer {
 		return 0;
 	}
 	
-	// TOFIX - add code to set up work space
+	// set up work space
 	protected int allocate(int width, int height) {
 		imgWidth = width;
 		imgHeight = height;
-		System.out.println("imgWidth = " + imgWidth); // REMOVETHIS
-		System.out.println("imgHeight = " + imgHeight); // REMOVETHIS
 		
 		// padded to be divisible by 2 based on block size
 		if (width % 2 != 0) {
@@ -93,7 +84,6 @@ public class ColorImageVectorQuantizer {
 		}
 		
 		numBlock = (fullWidth / 2) * (fullHeight / 2); 
-		System.out.println("numBlock = " + numBlock); // REMOVETHIS
 		
 		codeBook = new int[numCluster][numDimension];
 		
@@ -109,7 +99,7 @@ public class ColorImageVectorQuantizer {
 		return 0;
 	}
 
-	// TOFIX - add code to convert one image to vectors in VQ
+	// convert one image to vectors in VQ
 	protected void image2Vectors(MImage image, int vectors[][], int width, int height) {
 		
 		// rgb value of a single pixel
@@ -150,20 +140,9 @@ public class ColorImageVectorQuantizer {
 				countBlock++;
 			}
 		}
-		
-		/*
-		// REMOVETHIS
-		for (int i = 0; i < numBlock; i++) {
-			System.out.print("inputVectors[" + i + "] =");
-			for (int j = 0; j < numDimension; j++) {
-				System.out.print(inputVectors[i][j] + " ");
-			}
-			System.out.println();
-		}
-		*/
 	}
 
-	// TOFIX - add code to convert vectors to one image in VQ
+	// convert vectors to one image in VQ
 	protected void vectors2Image(int vectors[][], MImage image, int width, int height) {
 		
 		int countBlock = 0;
@@ -204,7 +183,7 @@ public class ColorImageVectorQuantizer {
 		
 	}
 
-	// TOFIX - add code to convert indices to one image in VQ
+	// convert indices to one image in VQ
 	protected void indices2Image(int indices[], MImage image, int width, int height) {
 		int countBlock = 0;
 		// rgb value of a single pixel
@@ -221,10 +200,10 @@ public class ColorImageVectorQuantizer {
 		}
 	}
 
-	// TOFIX - add code to train codebook with K-means clustering algorithm
+	// train codebook with K-means clustering algorithm
 	protected void train(int vectors[][], int count) {
 		
-		// Initialize codeBook with random number
+		// initialize codeBook with random numbers
 		for (int y = 0; y < numCluster; y++) {
 			int randInt = (int)(Math.random() * 256);
 			
@@ -249,7 +228,7 @@ public class ColorImageVectorQuantizer {
 			
 			if (Arrays.equals(currentIndices, prevIndices)) {
 				// no data points changed clusters
-				System.out.println("NO DATA POINT CHANGED. BREAKING ON i = " + i); // REMOVETHIS
+				System.out.println("TESTING: NO DATA POINTS CHANGED CLUSTERS. BREAKING ON i = " + i); // REMOVETHIS
 				break;
 			}
 			
@@ -258,10 +237,9 @@ public class ColorImageVectorQuantizer {
 		
 	}
 
-	// TOFIX - add code to display codebook
+	// display codebook
 	protected void display() {
 		System.out.println("CODEBOOK:");
-		//System.out.println(Arrays.deepToString(codeBook)); // REMOVETHIS?
 		System.out.println("Index\tArray");
 		System.out.println("-------------------------------------------------");
 		for (int i = 0; i < numCluster; i++) {
@@ -269,9 +247,9 @@ public class ColorImageVectorQuantizer {
 		}
 	}
 
-	// TOFIX - add code to quantize vectors to indices
+	// quantize vectors to indices
 	protected void quantize(int vectors[][], int count, int indices[]) {
-		// Quantize
+		// quantize
 		for (int i = 0; i < numBlock; i++) {
 			
 			double bestDist = Double.MAX_VALUE;
@@ -288,8 +266,6 @@ public class ColorImageVectorQuantizer {
 				
 				double dist = Math.sqrt(sum);
 				
-				//System.out.println("k = " + k + " dist = " + dist); // REMOVETHIS
-				
 				if (dist < bestDist) {
 					bestDist = dist;
 					bestIndex = k;
@@ -297,57 +273,33 @@ public class ColorImageVectorQuantizer {
 			}
 			
 			indices[i] = bestIndex;
-			
-			//System.out.println("bestIndex = " + bestIndex);
-			
 		}
 		
-		//System.out.println("indices = " + Arrays.toString(indices)); // REMOVETHIS
-		// System.exit(1); // REMOVETHIS
-		
-		// Update codebook
+		// update codebook
 		double[] sum = new double[numDimension];
 		for (int k = 0; k < numCluster; k++) {
 			count = 0; // number of input vectors assigned to kth cluster
 			
-			//System.out.println("Before: " + Arrays.toString(sum)); // REMOVETHIS
-			
 			// clear sum to 0
 			Arrays.fill(sum, 0);
 			
-			//System.out.println("After clear: " + Arrays.toString(sum)); // REMOVETHIS
-			
 			for (int i = 0; i < numBlock; i++) {
-				//System.out.println("indices[" + i + "] = " + indices[i]); // REMOVETHIS
 				if (indices[i] == k) {
 					count++;
 					for (int j = 0; j < numDimension; j++) {
-						//System.out.println("vectors[" + i + "][" + j + "] = " + vectors[i][j]); // REMOVETHIS
 						sum[j] += vectors[i][j];
 					}	
 				}
 			}
-			
-			//System.out.println("k = " + k + " and sum = " + Arrays.toString(sum)); // REMOVETHIS
-			//System.exit(1); // REMOVETHIS
 			
 			for (int j = 0; j < numDimension; j++) {
 				// the average
 				codeBook[k][j] = (int)Math.round(sum[j]/count);
 			}	
 		}
-		
-		/*
-		// REMOVETHIS
-		System.out.println("Codebook:");
-		System.out.println(Arrays.deepToString(codeBook));
-		
-		System.exit(1); // REMOVETHIS
-		*/
-		
 	}
 
-	// TOFIX - add code to dequantize indices to vectors
+	// dequantize indices to vectors
 	protected void dequantize(int indices[], int count, int vectors[][]) {
 		for (int i = 0; i < numBlock; i++) {
 			vectors[i] = codeBook[indices[i]];
