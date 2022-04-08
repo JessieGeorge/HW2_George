@@ -56,7 +56,6 @@ public class CS4551_George {
 	// main menu
 	public static int menu(Scanner in) {
 		int choice = 0;
-		// TOFIX - add main menu display
 		try {
 			choice = in.nextInt();
 		} catch (Exception e) {
