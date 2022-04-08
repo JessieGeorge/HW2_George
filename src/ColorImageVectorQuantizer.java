@@ -65,6 +65,7 @@ public class ColorImageVectorQuantizer {
 		dequantize(quantIndices, numBlock, quantVectors);
 		// write quantized image to file
 		//quantVectors = inputVectors; // REMOVETHIS
+		System.out.println("quantVectors = " + Arrays.deepToString(quantVectors));
 		MImage quantImage = new MImage(imgWidth, imgHeight);
 		vectors2Image(quantVectors, quantImage, width, height);
 		String quantName = token[0] + "-quant.ppm";
@@ -337,11 +338,8 @@ public class ColorImageVectorQuantizer {
 
 	// TOFIX - add code to dequantize indices to vectors
 	protected void dequantize(int indices[], int count, int vectors[][]) {
-		
 		for (int i = 0; i < numBlock; i++) {
-			// TODO: change where you store it
-			int[] temp = codeBook[indices[i]];
-			System.out.println("i = " + i + " temp = " + Arrays.toString(temp)); // REMOVETHIS
+			vectors[i] = codeBook[indices[i]];
 		}
 	}
 }
