@@ -208,6 +208,19 @@ public class ColorImageVectorQuantizer {
 
 	// TOFIX - add code to convert indices to one image in VQ
 	protected void indices2Image(int indices[], MImage image, int width, int height) {
+		int countBlock = 0;
+		// rgb value of a single pixel
+		int[] rgb = new int[3];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				rgb[0] = indices[countBlock];
+				rgb[1] = indices[countBlock];
+				rgb[2] = indices[countBlock];
+				image.setPixel(x, y, rgb);
+				
+				countBlock++;
+			}
+		}
 	}
 
 	// TOFIX - add code to train codebook with K-means clustering algorithm
