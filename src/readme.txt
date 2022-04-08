@@ -58,7 +58,7 @@ matrix multiplications step by step. I kept things in the specified range.
 
 For the conversion between chrominance 444 and 420 functions, 
 I averaged 4 neighboring pixels in the subsample.
-I assigned that average to 4 neighboring pixels in the upsample. 
+I assigned that average to 4 neighboring pixels in the supersample. 
 
 For the encode/decode plane functions,
 I followed the DCT/IDCT formulae respectively,
