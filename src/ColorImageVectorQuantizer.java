@@ -216,23 +216,18 @@ public class ColorImageVectorQuantizer {
 		int[] currentIndices = new int[numBlock];
 		for (int i = 0; i < maxIteration; i++) {
 			/*
-			 * TODO: break conditions
-			 * 
-			 * Iterate steps 2 & 3 until the algorithm meets a stopping condition 
-			 * (i.e. no data points change clusters, 
-			 * the sum of the distance is minimized, 
-			 * or the maximum number of iterations is reached.)
+			 * TODO: break condition
+			 * the sum of the distance is minimized?
 			 */
 			// quantize input image vectors to indices
 			quantize(inputVectors, numBlock, currentIndices);
 			
 			if (Arrays.equals(currentIndices, prevIndices)) {
 				// no data points changed clusters
-				System.out.println("TESTING: NO DATA POINTS CHANGED CLUSTERS. BREAKING ON i = " + i); // REMOVETHIS
 				break;
 			}
 			
-			prevIndices = currentIndices;
+			prevIndices = currentIndices.clone();
 		}
 		
 	}
