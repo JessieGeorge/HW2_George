@@ -79,7 +79,7 @@ public class ColorImageDCTCoder {
 		decode(outImg, n);
 		// write recovered image to files
 		String token[] = imgName.split("\\.");
-		String outName = token[0] + "-coded-n" + n + ".ppm";
+		String outName = token[0] + "-coded-n" + (int)n + ".ppm";
 		outImg.write2PPM(outName);
 		return 0;
 	}
