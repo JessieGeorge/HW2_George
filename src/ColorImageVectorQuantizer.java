@@ -49,13 +49,18 @@ public class ColorImageVectorQuantizer {
 		train(inputVectors, numBlock);
 		// display trained codebook
 		display();
-		/* TODO: uncomment this
 		// quantize input image vectors to indices
 		quantize(inputVectors, numBlock, quantIndices);
-		*/
+		
+		System.out.println("quantIndices = " + Arrays.toString(quantIndices)); // REMOVETHIS
 		System.exit(1); // REMOVETHIS
 		
 		// TOFIX - add code to save indices as PPM file
+		MImage indexImage = new MImage(fullWidth / 2, fullHeight / 2);
+		indices2Image(quantIndices, indexImage, fullWidth / 2, fullHeight / 2);
+		String indexName = token[0] + "-index.ppm";
+		indexImage.write2PPM(indexName);
+		
 		// dequantize indices back to vectors
 		dequantize(quantIndices, numBlock, quantVectors);
 		// write quantized image to file
@@ -260,7 +265,10 @@ public class ColorImageVectorQuantizer {
 				
 				double dist = Math.sqrt(sum);
 				
-				if (bestDist < dist) {
+				//System.out.println("dist = " + dist); // REMOVETHIS
+				
+				// TODO: double check comparison with Prof
+				if (dist < bestDist) {
 					bestDist = dist;
 					bestIndex = k;
 				}
@@ -268,6 +276,8 @@ public class ColorImageVectorQuantizer {
 			
 			indices[i] = bestIndex;
 		}
+		
+		//System.out.println("indices = " + Arrays.toString(indices)); // REMOVETHIS
 		
 		// Update codebook
 		double[] sum = new double[numDimension];
@@ -284,6 +294,8 @@ public class ColorImageVectorQuantizer {
 					}	
 				}
 			}
+			
+			//System.out.println(Arrays.toString(sum)); // REMOVETHIS
 			
 			for (int j = 0; j < numDimension; j++) {
 				// the average
