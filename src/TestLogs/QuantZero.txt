@@ -1,3 +1,6 @@
+This was because I had leftover initialization code from when I had the wrong number of loops
+
+
 PS C:\Users\Jessie\workspaceMultimediaGrad\HW2_George\src> java CS4551_George DuckyTiny.ppm
 
 Main Menu-----------------------------------

@@ -1,3 +1,6 @@
+This is because I used prev array = current array (which sets the same address),
+but what I actually wanted was prev array = clone of current array (copies just the content).
+
 PS C:\Users\Jessie\workspaceMultimediaGrad\HW2_George\src> java CS4551_George Ducky.ppm
 
 Main Menu-----------------------------------
