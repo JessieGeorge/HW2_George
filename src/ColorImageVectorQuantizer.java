@@ -239,12 +239,13 @@ public class ColorImageVectorQuantizer {
 
 	// display codebook
 	protected void display() {
-		System.out.println("CODEBOOK:");
+		System.out.println("\nCODEBOOK:");
 		System.out.println("Index\tArray");
 		System.out.println("-------------------------------------------------");
 		for (int i = 0; i < numCluster; i++) {
 			System.out.println(i + "\t" + Arrays.toString(codeBook[i]));
 		}
+		System.out.println();
 	}
 
 	// quantize vectors to indices
