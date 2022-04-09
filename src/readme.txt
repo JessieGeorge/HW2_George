@@ -19,7 +19,7 @@ vectors2Image function does the reverse of that.
 indices2Image function makes the grayscale index image.
 
 train function performs the K-means clustering algo.
-I initialized the codebook with random numbers.
+I initialized the codebook with random input samples.
 Then I loop to call the quantize function with 
 a break condition if the sum of the distance is minimized or 
 no data points changed clusters.

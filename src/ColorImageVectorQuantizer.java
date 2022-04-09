@@ -201,15 +201,11 @@ public class ColorImageVectorQuantizer {
 	}
 
 	// train codebook with K-means clustering algorithm
-	protected void train(int vectors[][], int count) {
-		
-		// initialize codeBook with random numbers
+	protected void train(int vectors[][], int count) {	
+		// initialize codeBook with random input samples
 		for (int y = 0; y < numCluster; y++) {
-			int randInt = (int)(Math.random() * 256);
-			
-			for (int x = 0; x < numDimension; x++) {
-				codeBook[y][x] = randInt;
-			}
+			int randInt = (int)(Math.random() * numBlock);
+			codeBook[y] = inputVectors[randInt].clone();
 		}
 		
 		int[] prevIndices = new int[numBlock];
