@@ -43,13 +43,9 @@ the image size to be divisible by any blockSize etc. I didn't do that since it's
 out of scope of the current project).
 I initialized the default quant tables as per the question.
 
-I commented out calling setWorkQuantTable in the decode function, since it 
-is already set globally when called in the encode function.
-
 allocate function sets up the resolutions and size of arrays.
 
-setWorkQuantTable function adjusts the compression quality of 
-quant tables globally.
+setWorkQuantTable function adjusts the compression quality of quant tables.
 
 extract/combine planes is self-explanatory.
 

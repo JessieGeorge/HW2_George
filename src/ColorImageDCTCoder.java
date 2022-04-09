@@ -37,7 +37,7 @@ public class ColorImageDCTCoder {
 	
 	private int blockSize = 8;
 	
-	private double[][] quantTableY = {
+	private static final double[][] DEFAULT_QUANT_TABLE_Y = {
 			{04.0, 04.0, 04.0, 08.0, 08.0, 16.0, 16.0, 32.0},
 			{04.0, 04.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0},
 			{04.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 32.0},
@@ -49,7 +49,7 @@ public class ColorImageDCTCoder {
 	};
 	
 	// Cb and Cr have the same quant table
-	private double[][] quantTableC = {
+	private static final double[][] DEFAULT_QUANT_TABLE_C = {
 			{08.0, 08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 64.0},
 			{08.0, 08.0, 16.0, 16.0, 32.0, 32.0, 64.0, 64.0},
 			{08.0, 16.0, 16.0, 32.0, 32.0, 64.0, 64.0, 64.0},
@@ -59,6 +59,10 @@ public class ColorImageDCTCoder {
 			{32.0, 64.0, 64.0, 64.0, 64.0, 96.0, 96.0, 96.0},
 			{64.0, 64.0, 64.0, 64.0, 96.0, 96.0, 96.0, 96.0}
 	};
+	
+	
+	// these will be modified for compression quality n
+	private double[][] quantTableY, quantTableC;
 	
 	public ColorImageDCTCoder() {
 	}
@@ -80,7 +84,7 @@ public class ColorImageDCTCoder {
 		// write recovered image to files
 		String token[] = imgName.split("\\.");
 		String outName = token[0] + "-coded-n" + (int)n + ".ppm";
-		outImg.write2PPM(outName);
+		outImg.write2PPM(outName);	
 		return 0;
 	}
 
@@ -104,7 +108,7 @@ public class ColorImageDCTCoder {
 	// decode one image
 	protected int decode(MImage outImg, double n) {
 		// set work quantization table
-		//setWorkQuantTable(n); // Commented this out since the quant tables were already set globally when called in encode function
+		setWorkQuantTable(n);
 		// D1/2. 8x8-based dequantization, inverse DCT
 		decodePlane(quantY, outY444, fullWidth, fullHeight, false);
 		decodePlane(quantCb, outCb420, halfWidth, halfHeight, true);
@@ -176,6 +180,10 @@ public class ColorImageDCTCoder {
 		outCb420 = new double[halfHeight][halfWidth];
 		outCr420 = new double[halfHeight][halfWidth];
 		
+		// match the size of default quant table
+		quantTableY = new double[8][8];
+		quantTableC = new double[8][8];
+		
 		return 0;
 	}
 
@@ -186,8 +194,8 @@ public class ColorImageDCTCoder {
 		
 		for (int i = 0; i < blockSize; i++) {
 			for (int j = 0; j < blockSize; j++) {
-				quantTableY[i][j] *= compressionQuality;
-				quantTableC[i][j] *= compressionQuality;
+				quantTableY[i][j] = DEFAULT_QUANT_TABLE_Y[i][j] * compressionQuality;
+				quantTableC[i][j] = DEFAULT_QUANT_TABLE_C[i][j] * compressionQuality;
 			}
 		}
 	}
