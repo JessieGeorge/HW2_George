@@ -21,7 +21,8 @@ indices2Image function makes the grayscale index image.
 train function performs the K-means clustering algo.
 I initialized the codebook with random numbers.
 Then I loop to call the quantize function with 
-a break condition if no data points changed clusters.
+a break condition if the sum of the distance is minimized or 
+no data points changed clusters.
 
 display function prints the codebook.
 

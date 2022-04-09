@@ -48,7 +48,7 @@ public class ColorImageVectorQuantizer {
 		// display trained codebook
 		display();
 		// quantize input image vectors to indices
-		quantize(inputVectors, numBlock, quantIndices);
+		double tempTotalDist = quantize(inputVectors, numBlock, quantIndices);
 		
 		// save indices as PPM file
 		MImage indexImage = new MImage(fullWidth / 2, fullHeight / 2);
@@ -214,19 +214,25 @@ public class ColorImageVectorQuantizer {
 		
 		int[] prevIndices = new int[numBlock];
 		int[] currentIndices = new int[numBlock];
+		double prevTotalDist = 0.0;
+		double currentTotalDist = 0.0;
 		for (int i = 0; i < maxIteration; i++) {
-			/*
-			 * TODO: break condition
-			 * the sum of the distance is minimized?
-			 */
 			// quantize input image vectors to indices
-			quantize(inputVectors, numBlock, currentIndices);
+			currentTotalDist = quantize(inputVectors, numBlock, currentIndices);
+			
+			if (Math.abs(currentTotalDist - prevTotalDist) < 0.000001) {
+				/*comparing the total distance from all vectors 
+				 * from previous iteration and current iteration, 
+				 * if the change is very small, we can stop.
+				 */
+				break;
+			}
+			prevTotalDist = currentTotalDist;
 			
 			if (Arrays.equals(currentIndices, prevIndices)) {
 				// no data points changed clusters
 				break;
 			}
-			
 			prevIndices = currentIndices.clone();
 		}
 		
@@ -244,7 +250,8 @@ public class ColorImageVectorQuantizer {
 	}
 
 	// quantize vectors to indices
-	protected void quantize(int vectors[][], int count, int indices[]) {
+	protected double quantize(int vectors[][], int count, int indices[]) {
+		double totalDist = 0.0;
 		// quantize
 		for (int i = 0; i < numBlock; i++) {
 			
@@ -261,6 +268,7 @@ public class ColorImageVectorQuantizer {
 				}
 				
 				double dist = Math.sqrt(sum);
+				totalDist += dist;
 				
 				if (dist < bestDist) {
 					bestDist = dist;
@@ -293,6 +301,8 @@ public class ColorImageVectorQuantizer {
 				codeBook[k][j] = (int)Math.round(sum[j]/count);
 			}	
 		}
+		
+		return totalDist;
 	}
 
 	// dequantize indices to vectors
